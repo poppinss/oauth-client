@@ -1,5 +1,7 @@
-# @poppinss/oauth-client
-> A package to implement "Login with" flow using OAuth compliant authorization servers.
+<div align="center"><img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1557762307/poppinss_iftxlt.jpg" width="600px"></div>
+
+# Oauth Client
+> A framework agnostic package to implement "Login with" flow using OAuth compliant authorization servers.
 
 [![circleci-image]][circleci-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url] [![synk-image]][synk-url]
 
@@ -9,6 +11,11 @@ This package ships with the implementation of `OAuth1.0 - three-legged flow` and
 - Ships with generic implementations that can be used to login with any identity provider.
 - Simple to use and intuitive APIs.
 - Intellisense all the way - The code is written in Typescript
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of contents
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Motivation
 The motivation for this package is to have a framework-agnostic implementation for the protocols themselves. The passportjs ecosystem relies heavily on the Express framework.
