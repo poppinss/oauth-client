@@ -17,16 +17,26 @@ import {
   RedirectRequestContract,
 } from '../../Contracts'
 
-import { generateRandom } from '../../utils'
 import { HttpClient } from '../../HttpClient'
 import { UrlBuilder } from '../../UrlBuilder'
 import { OauthException } from '../../Exceptions'
+import { generateRandom, Exception } from '../../utils'
 
 /**
  * A generic implementation of OAuth2. One can use it directly with any auth2.0 server
  */
 export class Oauth2Client<Token extends Oauth2AccessToken> {
   constructor(public options: Oauth2ClientConfig) {}
+
+  /**
+   * Define the authorize url. Can be overridden by config
+   */
+  protected authorizeUrl: string = ''
+
+  /**
+   * Define the access token url. Can be overridden by config
+   */
+  protected accessTokenUrl: string = ''
 
   /**
    * Processing the API client response. The child class can overwrite it
@@ -77,7 +87,12 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
   public getRedirectUrl(
     callback?: (request: RedirectRequestContract) => void
   ): string | Promise<string> {
-    const urlBuilder = new UrlBuilder(this.options.authorizeUrl)
+    const authorizeUrl = this.options.authorizeUrl || this.authorizeUrl
+    if (!authorizeUrl) {
+      throw new Exception('Cannot make redirect url without "authorizeUrl"')
+    }
+
+    const urlBuilder = new UrlBuilder(authorizeUrl)
 
     /**
      * Default params. One can call `clearParam` to remove them
@@ -133,7 +148,12 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
    * - client_secret
    */
   public async getAccessToken(callback?: (request: ApiRequestContract) => void): Promise<Token> {
-    const httpClient = this.httpClient(this.options.accessTokenUrl)
+    const accessTokenUrl = this.options.accessTokenUrl || this.accessTokenUrl
+    if (!accessTokenUrl) {
+      throw new Exception('Cannot get access token without "accessTokenUrl"')
+    }
+
+    const httpClient = this.httpClient(accessTokenUrl)
 
     /**
      * Default field. One can call `clearField` to remove them

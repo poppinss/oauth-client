@@ -152,9 +152,9 @@ export type Oauth2AccessToken = {
 export type Oauth2ClientConfig = {
   clientId: string
   clientSecret: string
-  authorizeUrl: string
-  accessTokenUrl: string
   callbackUrl: string
+  authorizeUrl?: string
+  accessTokenUrl?: string
 }
 
 /**
@@ -183,7 +183,7 @@ export type Oauth1ClientConfig = Oauth2ClientConfig & {
   /**
    * Url for getting the oauthToken and secret before the redirect
    */
-  requestTokenUrl: string
+  requestTokenUrl?: string
 
   /**
    * Required when requesting the access token. The initial request

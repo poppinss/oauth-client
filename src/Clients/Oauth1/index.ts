@@ -16,11 +16,11 @@ import {
   RedirectRequestContract,
 } from '../../Contracts'
 
-import { generateRandom } from '../../utils'
 import { UrlBuilder } from '../../UrlBuilder'
 import { HttpClient } from '../../HttpClient'
 import { OauthException } from '../../Exceptions'
 import { Oauth1Signature } from './Oauth1Signature'
+import { generateRandom, Exception } from '../../utils'
 
 /**
  * A generic implementation of Oauth1. One can use it directly with any
@@ -28,6 +28,21 @@ import { Oauth1Signature } from './Oauth1Signature'
  */
 export class Oauth1Client<Token extends Oauth1AccessToken> {
   constructor(public options: Oauth1ClientConfig) {}
+
+  /**
+   * Define the request token url. Can be overridden by config
+   */
+  protected requestTokenUrl: string = ''
+
+  /**
+   * Define the authorize url. Can be overridden by config
+   */
+  protected authorizeUrl: string = ''
+
+  /**
+   * Define the access token url. Can be overridden by config
+   */
+  protected accessTokenUrl: string = ''
 
   /**
    * Get the signature for the request
@@ -168,11 +183,16 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
   public async getRequestToken(
     callback?: (request: ApiRequestContract) => void
   ): Promise<Oauth1RequestToken> {
+    const requestTokenUrl = this.options.requestTokenUrl || this.requestTokenUrl
+    if (!requestTokenUrl) {
+      throw new Exception('Cannot get requestToken without "requestTokenUrl"')
+    }
+
     const {
       oauth_token: oauthToken,
       oauth_token_secret: oauthTokenSecret,
       ...parsed
-    } = await this.makeSignedRequest('requestToken', this.options.requestTokenUrl, callback)
+    } = await this.makeSignedRequest('requestToken', requestTokenUrl, callback)
 
     /**
      * We expect the response to have "oauth_token" and "oauth_token_secret"
@@ -202,7 +222,12 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
   public getRedirectUrl(
     callback?: (request: RedirectRequestContract) => void
   ): string | Promise<string> {
-    const urlBuilder = new UrlBuilder(this.options.authorizeUrl)
+    const authorizeUrl = this.options.authorizeUrl || this.authorizeUrl
+    if (!authorizeUrl) {
+      throw new Exception('Cannot make redirect url without "authorizeUrl"')
+    }
+
+    const urlBuilder = new UrlBuilder(authorizeUrl)
 
     this.configureRedirectRequest(urlBuilder)
 
@@ -240,6 +265,11 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       throw new Error('"oauthTokenSecret" is required to generate the access token')
     }
 
+    const accessTokenUrl = this.options.accessTokenUrl || this.accessTokenUrl
+    if (!accessTokenUrl) {
+      throw new Exception('Cannot get access token without "accessTokenUrl"')
+    }
+
     /**
      * Make signed request.
      */
@@ -247,7 +277,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       oauth_token: accessOauthToken,
       oauth_token_secret: accessOauthTokenSecret,
       ...parsed
-    } = await this.makeSignedRequest('accessToken', this.options.accessTokenUrl, callback)
+    } = await this.makeSignedRequest('accessToken', accessTokenUrl, callback)
 
     /**
      * We expect the response to have "oauth_token" and "oauth_token_secret"
