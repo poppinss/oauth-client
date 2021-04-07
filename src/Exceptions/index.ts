@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Exception } from '@poppinss/utils'
+import { Exception } from '../utils'
 
 export class OauthException extends Exception {
   public response: any
