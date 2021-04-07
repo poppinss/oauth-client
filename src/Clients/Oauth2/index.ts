@@ -61,6 +61,13 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
   protected configureAccessTokenRequest(_: ApiRequestContract) {}
 
   /**
+   * Returns the instance of the HTTP client for internal use
+   */
+  protected httpClient(url: string) {
+    return new HttpClient(url)
+  }
+
+  /**
    * Returns the redirect url for redirecting the user. Pre-defines
    * the following params
    *
@@ -126,7 +133,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
    * - client_secret
    */
   public async getAccessToken(callback?: (request: ApiRequestContract) => void): Promise<Token> {
-    const httpClient = new HttpClient(this.options.accessTokenUrl)
+    const httpClient = this.httpClient(this.options.accessTokenUrl)
 
     /**
      * Default field. One can call `clearField` to remove them

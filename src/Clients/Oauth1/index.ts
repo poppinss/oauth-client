@@ -56,7 +56,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     baseUrl: string,
     callback?: (request: ApiRequestContract) => void
   ) {
-    const httpClient = new HttpClient(baseUrl)
+    const httpClient = this.httpClient(baseUrl)
 
     /**
      * Define the 'oauth_callback' callback param. Only the first request for
@@ -144,6 +144,13 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     }
 
     return parse(client.responseType === 'buffer' ? response.toString() : response)
+  }
+
+  /**
+   * Returns the instance of the HTTP client for internal use
+   */
+  protected httpClient(url: string) {
+    return new HttpClient(url)
   }
 
   /**
