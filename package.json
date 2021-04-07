@@ -1,6 +1,6 @@
 {
   "name": "@poppinss/oauth",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A package to implement \"Login with\" flow using OAuth compliant authorization servers.",
   "main": "index.js",
   "scripts": {
