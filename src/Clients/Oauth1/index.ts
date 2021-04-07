@@ -169,6 +169,13 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
   }
 
   /**
+   * Returns the instance of the URL builder
+   */
+  protected urlBuilder(url: string) {
+    return new UrlBuilder(url)
+  }
+
+  /**
    * Verify state and the input value and raise exception if different or missing
    */
   public verifyState(state: string, inputValue?: string) {
@@ -227,7 +234,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       throw new Exception('Cannot make redirect url without "authorizeUrl"')
     }
 
-    const urlBuilder = new UrlBuilder(authorizeUrl)
+    const urlBuilder = this.urlBuilder(authorizeUrl)
 
     this.configureRedirectRequest(urlBuilder)
 

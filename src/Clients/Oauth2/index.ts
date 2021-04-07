@@ -78,6 +78,13 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
   }
 
   /**
+   * Returns the instance of the URL builder
+   */
+  protected urlBuilder(url: string) {
+    return new UrlBuilder(url)
+  }
+
+  /**
    * Returns the redirect url for redirecting the user. Pre-defines
    * the following params
    *
@@ -92,7 +99,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
       throw new Exception('Cannot make redirect url without "authorizeUrl"')
     }
 
-    const urlBuilder = new UrlBuilder(authorizeUrl)
+    const urlBuilder = this.urlBuilder(authorizeUrl)
 
     /**
      * Default params. One can call `clearParam` to remove them
