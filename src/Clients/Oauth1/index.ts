@@ -192,7 +192,9 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
    * })
    * ```
    */
-  public getRedirectUrl(callback?: (request: RedirectRequestContract) => void): string {
+  public getRedirectUrl(
+    callback?: (request: RedirectRequestContract) => void
+  ): string | Promise<string> {
     const urlBuilder = new UrlBuilder(this.options.authorizeUrl)
 
     this.configureRedirectRequest(urlBuilder)
