@@ -15,6 +15,28 @@ This package ships with the implementation of `OAuth1.0 - three-legged flow` and
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of contents
+
+- [Motivation](#motivation)
+- [Who should use this package?](#who-should-use-this-package)
+- [Installation](#installation)
+    - [👉 Real examples](#-real-examples)
+- [OAuth2 direct usage](#oauth2-direct-usage)
+    - [Step 1. Instantiate the `Oauth2Client`](#step-1-instantiate-the-oauth2client)
+    - [Step 2. Generate the redirect URL](#step-2-generate-the-redirect-url)
+    - [Step 3. Redirect user to the URL](#step-3-redirect-user-to-the-url)
+    - [Step 4. Handle post-authorization callback](#step-4-handle-post-authorization-callback)
+- [OAuth1 direct usage](#oauth1-direct-usage)
+    - [Step 1. Instantiate the `Oauth1Client`](#step-1-instantiate-the-oauth1client)
+    - [Step 2. Generate the request token](#step-2-generate-the-request-token)
+    - [Step 3. Redirect user to the URL](#step-3-redirect-user-to-the-url-1)
+    - [Step 4. Handle post-authorization callback](#step-4-handle-post-authorization-callback-1)
+- [Creating a custom Oauth2.0 driver](#creating-a-custom-oauth20-driver)
+- [Creating a custom Oauth1.0 driver](#creating-a-custom-oauth10-driver)
+- [Clearing existing params or fields](#clearing-existing-params-or-fields)
+  - [Following is the list of fields/params set by the clients implicitly](#following-is-the-list-of-fieldsparams-set-by-the-clients-implicitly)
+- [Difference with Oauth1Param and param](#difference-with-oauth1param-and-param)
+- [FAQs](#faqs)
+
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Motivation
