@@ -64,6 +64,10 @@
     "contents": ".",
     "anyBranch": false
   },
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  },
   "dependencies": {
     "@types/luxon": "^1.26.3",
     "got": "^11.8.2",
