@@ -72,5 +72,17 @@
     "@types/luxon": "^1.26.3",
     "got": "^11.8.2",
     "luxon": "^1.26.0"
-  }
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/poppinss/oauth-client.git"
+  },
+  "bugs": {
+    "url": "https://github.com/poppinss/oauth-client/issues"
+  },
+  "homepage": "https://github.com/poppinss/oauth-client#readme"
 }
