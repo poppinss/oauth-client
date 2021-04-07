@@ -27,7 +27,7 @@ import { Oauth1Signature } from './Oauth1Signature'
  * Oauth1.0 or Oauth1.0a server
  */
 export class Oauth1Client<Token extends Oauth1AccessToken> {
-  constructor(private options: Oauth1ClientConfig) {}
+  constructor(public options: Oauth1ClientConfig) {}
 
   /**
    * Get the signature for the request

@@ -26,7 +26,7 @@ import { OauthException } from '../../Exceptions'
  * A generic implementation of OAuth2. One can use it directly with any auth2.0 server
  */
 export class Oauth2Client<Token extends Oauth2AccessToken> {
-  constructor(private options: Oauth2ClientConfig) {}
+  constructor(public options: Oauth2ClientConfig) {}
 
   /**
    * Processing the API client response. The child class can overwrite it
