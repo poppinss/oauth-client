@@ -626,7 +626,7 @@ The Oauth1 specification has two types of parameters. One is added to the URL as
 [npm-image]: https://img.shields.io/npm/v/@poppinss/oauth-client.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/@poppinss/oauth-client "npm"
 
-[license-image]: https://img.shields.io/npm/l/@poppinss/oauth-client?color=blueviolet&style=for-the-badge
+[license-image]: https://img.shields.io/npm/l/@poppinss/oauth-client.svg?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
 
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
