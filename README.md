@@ -1,7 +1,7 @@
 # @poppinss/oauth-client
 > A package to implement "Login with" flow using OAuth compliant authorization servers.
 
-[![circleci-image]][circleci-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url]
+[![circleci-image]][circleci-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url] [![synk-image]][synk-url]
 
 This package ships with the implementation of `OAuth1.0 - three-legged flow` and `OAuth2.0 - Authorization Code Grant` flows. You can use it to build "Login with" flow in your Node.js applications.
 
@@ -439,14 +439,18 @@ export class TwitterDriver extends Oauth1Client {
   }
 }
 ```
-[circleci-image]: https://img.shields.io/circleci/project/github/null/null/master.svg?style=for-the-badge&logo=circleci
-[circleci-url]: https://circleci.com/gh/null/null "circleci"
 
-[npm-image]: https://img.shields.io/npm/v/@poppinss/oauth.svg?style=for-the-badge&logo=npm
-[npm-url]: https://npmjs.org/package/@poppinss/oauth "npm"
+[circleci-image]: https://img.shields.io/circleci/project/github/poppinss/oauth-client/master.svg?style=for-the-badge&logo=circleci
+[circleci-url]: https://circleci.com/gh/poppinss/oauth-client "circleci"
 
-[license-image]: https://img.shields.io/npm/l/@poppinss/oauth?color=blueviolet&style=for-the-badge
+[npm-image]: https://img.shields.io/npm/v/@poppinss/oauth-client.svg?style=for-the-badge&logo=npm
+[npm-url]: https://npmjs.org/package/@poppinss/oauth-client "npm"
+
+[license-image]: https://img.shields.io/npm/l/@poppinss/oauth-client?color=blueviolet&style=for-the-badge
 [license-url]: LICENSE.md "license"
 
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
 [typescript-url]:  "typescript"
+
+[synk-image]: https://img.shields.io/snyk/vulnerabilities/github/poppinss/oauth-client?label=Synk%20Vulnerabilities&style=for-the-badge
+[synk-url]: https://snyk.io/test/github/poppinss/oauth-client?targetFile=package.json "synk"
