@@ -47,7 +47,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
   /**
    * Get the signature for the request
    */
-  private getSignature(
+  protected getSignature(
     baseUrl: string,
     params: Record<string, any>,
     requestToken?: Oauth1RequestToken
@@ -70,7 +70,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
    * the Oauth1 spec and generates the Authorization header using the
    * [[Oauth1Signature]] class.
    */
-  private async makeSignedRequest(
+  protected async makeSignedRequest(
     event: 'requestToken' | 'accessToken',
     baseUrl: string,
     requestToken?: Oauth1RequestToken,
