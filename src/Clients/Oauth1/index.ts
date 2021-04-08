@@ -49,12 +49,13 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
    */
   protected getSignature(
     baseUrl: string,
+    method: 'get' | 'post',
     params: Record<string, any>,
     requestToken?: Oauth1RequestToken
   ) {
     return new Oauth1Signature({
       url: baseUrl,
-      method: 'POST',
+      method: method.toUpperCase(),
       params: params,
       consumerKey: this.options.clientId,
       consumerSecret: this.options.clientSecret,
@@ -71,23 +72,12 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
    * [[Oauth1Signature]] class.
    */
   protected async makeSignedRequest(
-    event: 'requestToken' | 'accessToken',
-    baseUrl: string,
+    url: string,
+    method: 'get' | 'post',
     requestToken?: Oauth1RequestToken,
     callback?: (request: ApiRequestContract) => void
   ) {
-    const httpClient = this.httpClient(baseUrl)
-
-    /**
-     * Define the 'oauth_callback' callback param. Only the first request for
-     * temporary credentials sets this
-     */
-    if (event === 'requestToken') {
-      httpClient.oauth1Param('oauth_callback', this.options.callbackUrl)
-      this.configureRequestTokenRequest(httpClient)
-    } else {
-      this.configureAccessTokenRequest(httpClient)
-    }
+    const httpClient = this.httpClient(url)
 
     /**
      * Invoke callback to allow configuring request
@@ -100,7 +90,8 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
      * Generate oauth header
      */
     const { oauthHeader } = this.getSignature(
-      baseUrl,
+      url,
+      method,
       {
         ...httpClient.params,
         ...httpClient.oauth1Params,
@@ -121,8 +112,8 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     /**
      * Make HTTP request
      */
-    const response = await httpClient.post()
-    return this.processClientResponse(event, httpClient, response)
+    const response = await httpClient[method]()
+    return this.processClientResponse(url, httpClient, response)
   }
 
   /**
@@ -155,11 +146,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
    * Processing the API client response. The child class can overwrite it
    * for more control
    */
-  protected processClientResponse(
-    _: 'requestToken' | 'accessToken',
-    client: HttpClient,
-    response: any
-  ): any {
+  protected processClientResponse(_: string, client: HttpClient, response: any): any {
     /**
      * Return json as it is when parsed response as json
      */
@@ -208,7 +195,14 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       oauth_token: oauthToken,
       oauth_token_secret: oauthTokenSecret,
       ...parsed
-    } = await this.makeSignedRequest('requestToken', requestTokenUrl, undefined, callback)
+    } = await this.makeSignedRequest(requestTokenUrl, 'post', undefined, (request) => {
+      request.oauth1Param('oauth_callback', this.options.callbackUrl)
+      this.configureRequestTokenRequest(request)
+
+      if (typeof callback === 'function') {
+        callback(request)
+      }
+    })
 
     /**
      * We expect the response to have "oauth_token" and "oauth_token_secret"
@@ -296,7 +290,13 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       oauth_token: accessOauthToken,
       oauth_token_secret: accessOauthTokenSecret,
       ...parsed
-    } = await this.makeSignedRequest('accessToken', accessTokenUrl, requestToken, callback)
+    } = await this.makeSignedRequest(accessTokenUrl, 'post', requestToken, (request) => {
+      this.configureAccessTokenRequest(request)
+
+      if (typeof callback === 'function') {
+        callback(request)
+      }
+    })
 
     /**
      * We expect the response to have "oauth_token" and "oauth_token_secret"
