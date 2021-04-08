@@ -184,12 +184,4 @@ export type Oauth1ClientConfig = Oauth2ClientConfig & {
    * Url for getting the oauthToken and secret before the redirect
    */
   requestTokenUrl?: string
-
-  /**
-   * Required when requesting the access token. The initial request
-   * contains the both, that must be saved inside cookies for later
-   * use
-   */
-  oauthToken?: string
-  oauthTokenSecret?: string
 }

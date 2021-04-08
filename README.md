@@ -255,20 +255,10 @@ Upon redirect, you will get the `oauth_token` and the `oauth_verifier` inside th
 
 Next, you must retrieve the `token` and `secret` you saved inside the cookies in **Step 3**. Finally, we will end up with the following four values.
 
-- `token`: The token value from the cookie
-- `secret`: The token secret the cookie
+- `token`: The token value from the cookie (Need it to generate access token)
+- `secret`: The token secret the cookie (Need it to generate access token)
 - `oauth_token`: Passed as query string by the authorization server
 - `oauth_verifier`: Passed as query string by the authorization server
-
-Re-instantiate the client instance and define the `oauthToken` and `oauthTokenSecret` config properties.
-
-```ts
-const client = new Oauth1Client({
-  // ... standard config values
-  oauthToken: oauth_token,
-  oauthTokenSecret: secret,
-})
-```
 
 Verify the `token` and the `oauth_token` to be the same as follows.
 
@@ -279,7 +269,10 @@ client.verifyState(token, oauth_token)
 Finally, you are ready to generate the access token. Do make sure also to set the `oauth_verifier`.
 
 ```ts
-const accessToken = await client.getAccessToken((request) => {
+const accessToken = await client.getAccessToken({
+  token: token,
+  secre: secret,
+}, (request) => {
   request.oauth1Param('oauth_verifier', oauth_verifier)
 })
 ```
@@ -485,13 +478,10 @@ export class TwitterDriver extends Oauth1Client {
      * two extra params this time and generate the
      * access token
      */
-    return this
-      .child({
-        ...this.options,
-        oauthToken: oauthToken,
-        oauthTokenSecret: existingSecret
-      })
-      .getAccessToken(callback)
+    return super.getAccessToken({
+      token: existingToken,
+      secret: existingSecret
+    }, callback)
   }
 
 }

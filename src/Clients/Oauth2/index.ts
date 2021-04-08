@@ -214,11 +214,4 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
       ...parsed,
     }
   }
-
-  /**
-   * Create a new instance of the "Oauth2Client"
-   */
-  public child(options: Oauth2ClientConfig) {
-    return new Oauth2Client(options)
-  }
 }

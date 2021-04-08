@@ -298,11 +298,12 @@ test.group('Oauth1Request | access token', () => {
       accessTokenUrl: 'https://www.twitter.com/access_token',
       clientId: 'a-dummy-consumer-key',
       clientSecret: 'a-dummy-consumer-secret',
-      oauthToken: 'foo',
-      oauthTokenSecret: 'bar',
     })
 
-    const token = await request.getAccessToken()
+    const token = await request.getAccessToken({
+      token: 'foo',
+      secret: 'bar',
+    })
     assert.equal(token.token, '1')
     assert.equal(token.secret, 'foo')
   })

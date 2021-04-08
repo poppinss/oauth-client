@@ -47,7 +47,11 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
   /**
    * Get the signature for the request
    */
-  private getSignature(baseUrl: string, params: Record<string, any>) {
+  private getSignature(
+    baseUrl: string,
+    params: Record<string, any>,
+    requestToken?: Oauth1RequestToken
+  ) {
     return new Oauth1Signature({
       url: baseUrl,
       method: 'POST',
@@ -56,8 +60,8 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       consumerSecret: this.options.clientSecret,
       nonce: generateRandom(32),
       unixTimestamp: Math.floor(new Date().getTime() / 1000),
-      oauthToken: this.options.oauthToken,
-      oauthTokenSecret: this.options.oauthTokenSecret,
+      oauthToken: requestToken && requestToken.token,
+      oauthTokenSecret: requestToken && requestToken.secret,
     }).generate()
   }
 
@@ -69,6 +73,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
   private async makeSignedRequest(
     event: 'requestToken' | 'accessToken',
     baseUrl: string,
+    requestToken?: Oauth1RequestToken,
     callback?: (request: ApiRequestContract) => void
   ) {
     const httpClient = this.httpClient(baseUrl)
@@ -94,15 +99,19 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     /**
      * Generate oauth header
      */
-    const { oauthHeader } = this.getSignature(baseUrl, {
-      ...httpClient.params,
-      ...httpClient.oauth1Params,
-      /**
-       * Send request body when is urlencoded
-       * https://oauth1.wp-api.org/docs/basics/Signing.html#json-data
-       */
-      ...(httpClient.requestType === 'urlencoded' ? httpClient.fields : {}),
-    })
+    const { oauthHeader } = this.getSignature(
+      baseUrl,
+      {
+        ...httpClient.params,
+        ...httpClient.oauth1Params,
+        /**
+         * Send request body when is urlencoded
+         * https://oauth1.wp-api.org/docs/basics/Signing.html#json-data
+         */
+        ...(httpClient.requestType === 'urlencoded' ? httpClient.fields : {}),
+      },
+      requestToken
+    )
 
     /**
      * Set the oauth header
@@ -199,7 +208,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       oauth_token: oauthToken,
       oauth_token_secret: oauthTokenSecret,
       ...parsed
-    } = await this.makeSignedRequest('requestToken', requestTokenUrl, callback)
+    } = await this.makeSignedRequest('requestToken', requestTokenUrl, undefined, callback)
 
     /**
      * We expect the response to have "oauth_token" and "oauth_token_secret"
@@ -254,22 +263,25 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
    * the "oauth_verifier" code using the callback input.
    *
    * ```ts
-   * client.getAccessToken((request) => {
+   * client.getAccessToken({ token, secret }, (request) => {
    *   request.oauth1Param('oauth_verifier', verifierValue)
    * })
    * ```
    */
-  public async getAccessToken(callback?: (request: ApiRequestContract) => void): Promise<Token> {
+  public async getAccessToken(
+    requestToken: Oauth1RequestToken,
+    callback?: (request: ApiRequestContract) => void
+  ): Promise<Token> {
     /**
      * Even though the spec allows to generate access token without the "oauthTokenSecret".
      * We enforce both the "oauthToken" and "oauthTokenSecret" to exist. This ensures
      * better security
      */
-    if (!this.options.oauthToken) {
-      throw new Error('"oauthToken" is required to generate the access token')
+    if (!requestToken.token) {
+      throw new Error('"getAccessToken" expects "requestToken.token" as the first argument')
     }
-    if (!this.options.oauthTokenSecret) {
-      throw new Error('"oauthTokenSecret" is required to generate the access token')
+    if (!requestToken.secret) {
+      throw new Error('"getAccessToken" expects "requestToken.secret" as the first argument')
     }
 
     const accessTokenUrl = this.options.accessTokenUrl || this.accessTokenUrl
@@ -284,7 +296,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       oauth_token: accessOauthToken,
       oauth_token_secret: accessOauthTokenSecret,
       ...parsed
-    } = await this.makeSignedRequest('accessToken', accessTokenUrl, callback)
+    } = await this.makeSignedRequest('accessToken', accessTokenUrl, requestToken, callback)
 
     /**
      * We expect the response to have "oauth_token" and "oauth_token_secret"
@@ -298,12 +310,5 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       secret: accessOauthTokenSecret as string,
       ...parsed,
     }
-  }
-
-  /**
-   * Create a new instance of the "Oauth1Client"
-   */
-  public child(options: Oauth1ClientConfig) {
-    return new Oauth1Client(options)
   }
 }

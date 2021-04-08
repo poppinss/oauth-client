@@ -55,17 +55,19 @@ export async function handleCallback(req: Request, res: Response) {
   /**
    * Instantiate the driver
    */
-  const driver = new Oauth1Client({
-    ...twitterConfig,
-    oauthToken: oauthToken,
-    oauthTokenSecret: oauthSecret,
-  })
+  const driver = new Oauth1Client(twitterConfig)
 
   try {
     driver.verifyState(oldOauthToken, oauthToken)
-    const accessToken = await driver.getAccessToken((request) => {
-      request.oauth1Param('oauth_verifier', oauthVerifier)
-    })
+    const accessToken = await driver.getAccessToken(
+      {
+        token: oauthToken,
+        secret: oauthSecret,
+      },
+      (request) => {
+        request.oauth1Param('oauth_verifier', oauthVerifier)
+      }
+    )
     res.type('json').send(accessToken)
   } catch (error) {
     res.send(error.response && error.response.body ? error.response.body : error.response || error)
