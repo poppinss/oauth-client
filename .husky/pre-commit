@@ -2,3 +2,5 @@
 . "$(dirname "$0")/_/husky.sh"
 
 npx --no-install doctoc README.md --title='## Table of contents' && git add README.md
+npx doctoc README.md --title='## Table of contents'
+git add README.md

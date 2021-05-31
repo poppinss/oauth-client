@@ -3,7 +3,7 @@
 # Oauth Client
 > A framework agnostic package to implement "Login with" flow using OAuth compliant authorization servers.
 
-[![circleci-image]][circleci-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url] [![synk-image]][synk-url]
+[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url] [![synk-image]][synk-url]
 
 This package ships with the implementation of `OAuth1.0 - three-legged flow` and `OAuth2.0 - Authorization Code Grant` flows. You can use it to build "Login with" flow in your Node.js applications.
 
@@ -610,8 +610,8 @@ The Oauth1 specification has two types of parameters. One is added to the URL as
   Not right now 😬. The server-side implementations mainly use the <code>Authorization Code Grant </code> flow, and I want to keep this package focused on that only.
 </details>
 
-[circleci-image]: https://img.shields.io/circleci/project/github/poppinss/oauth-client/master.svg?style=for-the-badge&logo=circleci
-[circleci-url]: https://circleci.com/gh/poppinss/oauth-client "circleci"
+[gh-workflow-image]: https://img.shields.io/github/workflow/status/poppinss/oauth-client/test?style=for-the-badge
+[gh-workflow-url]: https://github.com/poppinss/oauth-client/actions/workflows/test.yml "Github action"
 
 [npm-image]: https://img.shields.io/npm/v/@poppinss/oauth-client.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/@poppinss/oauth-client "npm"

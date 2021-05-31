@@ -21,7 +21,7 @@
     "commit": "git-cz",
     "release": "np",
     "version": "npm run build",
-    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json null"
+    "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json poppinss/oauth-client"
   },
   "keywords": [
     "oauth",
@@ -35,9 +35,7 @@
     "@adonisjs/require-ts": "^2.0.4",
     "@types/express": "^4.17.12",
     "@types/node": "^15.6.1",
-    "commitizen": "^4.2.4",
     "cookie-parser": "^1.4.5",
-    "cz-conventional-changelog": "^3.3.0",
     "del-cli": "^3.0.1",
     "doctoc": "^2.0.0",
     "dotenv": "^10.0.0",
