@@ -1,14 +1,13 @@
 /*
  * @poppinss/oauth-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Poppinss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-export { Oauth1Client } from './src/Clients/Oauth1'
-export { Oauth2Client } from './src/Clients/Oauth2'
-export { HttpClient } from './src/HttpClient'
-export { UrlBuilder } from './src/UrlBuilder'
-export * from './src/Contracts'
+export { HttpClient } from './src/http_client.js'
+export { UrlBuilder } from './src/url_builder.js'
+export { Oauth1Client } from './src/clients/oauth1/main.js'
+export { Oauth2Client } from './src/clients/oauth2/main.js'

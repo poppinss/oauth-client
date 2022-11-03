@@ -1,26 +1,28 @@
 /*
  * @poppinss/oauth-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Poppinss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-import { parse } from 'querystring'
 import { DateTime } from 'luxon'
+import { parse } from 'node:querystring'
+import { Exception } from '@poppinss/utils'
+import string from '@poppinss/utils/string'
 
 import {
   Oauth2AccessToken,
   Oauth2ClientConfig,
   ApiRequestContract,
   RedirectRequestContract,
-} from '../../Contracts'
+} from '../../types.js'
 
-import { HttpClient } from '../../HttpClient'
-import { UrlBuilder } from '../../UrlBuilder'
-import { OauthException } from '../../Exceptions'
-import { generateRandom, Exception } from '../../utils'
+import { HttpClient } from '../../http_client.js'
+import { UrlBuilder } from '../../url_builder.js'
+import { MissingTokenException } from '../../exceptions/missing_token.js'
+import { StateMisMatchException } from '../../exceptions/state_mismatch.js'
 
 /**
  * A generic implementation of OAuth2. One can use it directly with any auth2.0 server
@@ -46,11 +48,11 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
     /**
      * Return json as it is when parsed response as json
      */
-    if (client.responseType === 'json') {
+    if (client.getResponseType() === 'json') {
       return response
     }
 
-    return parse(client.responseType === 'buffer' ? response.toString() : response)
+    return parse(client.getResponseType() === 'buffer' ? response.toString() : response)
   }
 
   /**
@@ -91,12 +93,12 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
    * - redirect_uri
    * - client_id
    */
-  public getRedirectUrl(
-    callback?: (request: RedirectRequestContract) => void
-  ): string | Promise<string> {
+  getRedirectUrl(callback?: (request: RedirectRequestContract) => void): string | Promise<string> {
     const authorizeUrl = this.options.authorizeUrl || this.authorizeUrl
     if (!authorizeUrl) {
-      throw new Exception('Cannot make redirect url without "authorizeUrl"')
+      throw new Exception(
+        'Missing "config.authorizeUrl". The property is required to make redirect url'
+      )
     }
 
     const urlBuilder = this.urlBuilder(authorizeUrl)
@@ -124,16 +126,16 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
    * Generates a random token to be stored as a state and to be sent along
    * for later verification
    */
-  public getState() {
-    return generateRandom(32)
+  getState() {
+    return string.random(32)
   }
 
   /**
    * Verifies the redirect input with the state input
    */
-  public verifyState(state: string, inputValue?: string) {
+  verifyState(state: string, inputValue?: string) {
     if (!state || state !== inputValue) {
-      throw OauthException.stateMisMatch()
+      throw new StateMisMatchException()
     }
   }
 
@@ -154,10 +156,12 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
    * - client_id
    * - client_secret
    */
-  public async getAccessToken(callback?: (request: ApiRequestContract) => void): Promise<Token> {
+  async getAccessToken(callback?: (request: ApiRequestContract) => void): Promise<Token> {
     const accessTokenUrl = this.options.accessTokenUrl || this.accessTokenUrl
     if (!accessTokenUrl) {
-      throw new Exception('Cannot get access token without "accessTokenUrl"')
+      throw new Exception(
+        'Missing "config.accessTokenUrl". The property is required to get access token'
+      )
     }
 
     const httpClient = this.httpClient(accessTokenUrl)
@@ -171,7 +175,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
     httpClient.field('client_secret', this.options.clientSecret)
 
     /**
-     * Expecting JSON response. One call call `parseAs('text')` for urlencoded
+     * Expecting JSON response. One can call `parseAs('text')` for urlencoded
      * response
      */
     httpClient.parseAs('json')
@@ -202,7 +206,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
      * We expect the response to have "access_token"
      */
     if (!accessToken) {
-      throw OauthException.missingAccessToken(parsed)
+      throw new MissingTokenException(MissingTokenException.oauth2Message, { cause: parsed })
     }
 
     return {

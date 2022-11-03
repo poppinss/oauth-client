@@ -1,4 +1,13 @@
-import { Oauth1ClientConfig, Oauth2ClientConfig } from '../src/Contracts'
+/*
+ * @poppinss/oauth-client
+ *
+ * (c) Poppinss
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+import { Oauth1ClientConfig, Oauth2ClientConfig } from '../src/types.js'
 const BASE_URL = `http://localhost:${process.env.PORT}`
 
 export const githubConfig: Oauth2ClientConfig = {

@@ -1,7 +1,7 @@
 /*
  * @poppinss/oauth-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Poppinss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,8 +9,8 @@
 
 import { Request, Response } from 'express'
 
-import { twitterConfig } from './config'
-import { Oauth1Client } from '../src/Clients/Oauth1'
+import { twitterConfig } from './config.js'
+import { Oauth1Client } from '../src/clients/oauth1/main.js'
 
 export async function renderRedirect(_: Request, res: Response) {
   /**

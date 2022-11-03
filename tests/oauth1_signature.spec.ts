@@ -1,17 +1,17 @@
 /*
- * @adonisjs/ally
+ * @poppinss/oauth-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Poppinss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-import test from 'japa'
-import { Oauth1Signature } from '../src/Clients/Oauth1/Oauth1Signature'
+import { test } from '@japa/runner'
+import { Oauth1Signature } from '../src/clients/oauth1/signature.js'
 
 test.group('Oauth1Signature', () => {
-  test('create signature for the oauth1 request token', (assert) => {
+  test('create signature for the oauth1 request token', ({ assert }) => {
     const timestamp = 1582326295
 
     const { oauthParams, params, signature, oauthHeader } = new Oauth1Signature({
@@ -47,7 +47,7 @@ test.group('Oauth1Signature', () => {
     assert.equal(signature, '1yZxHeatgLgRvfgk3gXo8DbYHC0=')
   })
 
-  test('do not add non "oauth_" tokens to the oauthParams', (assert) => {
+  test('do not add non "oauth_" tokens to the oauthParams', ({ assert }) => {
     const timestamp = 1582326295
 
     const { oauthParams, params, signature, oauthHeader } = new Oauth1Signature({
@@ -87,7 +87,7 @@ test.group('Oauth1Signature', () => {
     assert.equal(signature, 'Pn2gu172CDNq2Isq56jOzWyUX9Y=')
   })
 
-  test('allow extra oauth_ values', (assert) => {
+  test('allow extra oauth_ values', ({ assert }) => {
     const timestamp = 1582326295
 
     const { oauthParams, params, signature, oauthHeader } = new Oauth1Signature({

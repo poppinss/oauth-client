@@ -1,26 +1,28 @@
 /*
  * @poppinss/oauth-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Poppinss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-import { parse } from 'querystring'
+import { parse } from 'node:querystring'
+import { Exception } from '@poppinss/utils'
+import string from '@poppinss/utils/string'
 import {
   Oauth1AccessToken,
   Oauth1ClientConfig,
   ApiRequestContract,
   Oauth1RequestToken,
   RedirectRequestContract,
-} from '../../Contracts'
+} from '../../types.js'
 
-import { UrlBuilder } from '../../UrlBuilder'
-import { HttpClient } from '../../HttpClient'
-import { OauthException } from '../../Exceptions'
-import { Oauth1Signature } from './Oauth1Signature'
-import { generateRandom, Exception } from '../../utils'
+import { Oauth1Signature } from './signature.js'
+import { HttpClient } from '../../http_client.js'
+import { UrlBuilder } from '../../url_builder.js'
+import { MissingTokenException } from '../../exceptions/missing_token.js'
+import { StateMisMatchException } from '../../exceptions/state_mismatch.js'
 
 /**
  * A generic implementation of Oauth1. One can use it directly with any
@@ -59,7 +61,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       params: params,
       consumerKey: this.options.clientId,
       consumerSecret: this.options.clientSecret,
-      nonce: generateRandom(32),
+      nonce: string.random(32),
       unixTimestamp: Math.floor(new Date().getTime() / 1000),
       oauthToken: requestToken && requestToken.token,
       oauthTokenSecret: requestToken && requestToken.secret,
@@ -93,13 +95,13 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       url,
       method,
       {
-        ...httpClient.params,
-        ...httpClient.oauth1Params,
+        ...httpClient.getParams(),
+        ...httpClient.getOauth1Params(),
         /**
-         * Send request body when is urlencoded
+         * Send request body when as urlencoded query string
          * https://oauth1.wp-api.org/docs/basics/Signing.html#json-data
          */
-        ...(httpClient.requestType === 'urlencoded' ? httpClient.fields : {}),
+        ...(httpClient.getRequestType() === 'urlencoded' ? httpClient.getFields() : {}),
       },
       requestToken
     )
@@ -150,11 +152,11 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     /**
      * Return json as it is when parsed response as json
      */
-    if (client.responseType === 'json') {
+    if (client.getResponseType() === 'json') {
       return response
     }
 
-    return parse(client.responseType === 'buffer' ? response.toString() : response)
+    return parse(client.getResponseType() === 'buffer' ? response.toString() : response)
   }
 
   /**
@@ -174,21 +176,24 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
   /**
    * Verify state and the input value and raise exception if different or missing
    */
-  public verifyState(state: string, inputValue?: string) {
+  verifyState(state: string, inputValue?: string) {
     if (!state || state !== inputValue) {
-      throw OauthException.stateMisMatch()
+      throw new StateMisMatchException()
     }
   }
 
   /**
    * Returns the oauth token and secret for the upcoming requests
    */
-  public async getRequestToken(
+  async getRequestToken(
     callback?: (request: ApiRequestContract) => void
   ): Promise<Oauth1RequestToken> {
     const requestTokenUrl = this.options.requestTokenUrl || this.requestTokenUrl
+
     if (!requestTokenUrl) {
-      throw new Exception('Cannot get requestToken without "requestTokenUrl"')
+      throw new Exception(
+        'Missing "config.requestTokenUrl". The property is required to get request token'
+      )
     }
 
     const {
@@ -208,7 +213,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
      * We expect the response to have "oauth_token" and "oauth_token_secret"
      */
     if (!oauthToken || !oauthTokenSecret) {
-      throw OauthException.missingTokenAndSecret(parsed)
+      throw new MissingTokenException(MissingTokenException.oauth1Message, { cause: parsed })
     }
 
     return {
@@ -229,12 +234,12 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
    * })
    * ```
    */
-  public getRedirectUrl(
-    callback?: (request: RedirectRequestContract) => void
-  ): string | Promise<string> {
+  getRedirectUrl(callback?: (request: RedirectRequestContract) => void): string | Promise<string> {
     const authorizeUrl = this.options.authorizeUrl || this.authorizeUrl
     if (!authorizeUrl) {
-      throw new Exception('Cannot make redirect url without "authorizeUrl"')
+      throw new Exception(
+        'Missing "config.authorizeUrl". The property is required to make redirect url'
+      )
     }
 
     const urlBuilder = this.urlBuilder(authorizeUrl)
@@ -262,25 +267,33 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
    * })
    * ```
    */
-  public async getAccessToken(
+  async getAccessToken(
     requestToken: Oauth1RequestToken,
     callback?: (request: ApiRequestContract) => void
   ): Promise<Token> {
+    const accessTokenUrl = this.options.accessTokenUrl || this.accessTokenUrl
+
     /**
      * Even though the spec allows to generate access token without the "oauthTokenSecret".
      * We enforce both the "oauthToken" and "oauthTokenSecret" to exist. This ensures
      * better security
      */
     if (!requestToken.token) {
-      throw new Error('"getAccessToken" expects "requestToken.token" as the first argument')
-    }
-    if (!requestToken.secret) {
-      throw new Error('"getAccessToken" expects "requestToken.secret" as the first argument')
+      throw new Exception(
+        'Missing "requestToken.token". The property is required to generate access token'
+      )
     }
 
-    const accessTokenUrl = this.options.accessTokenUrl || this.accessTokenUrl
+    if (!requestToken.secret) {
+      throw new Exception(
+        'Missing "requestToken.secret". The property is required to generate access token'
+      )
+    }
+
     if (!accessTokenUrl) {
-      throw new Exception('Cannot get access token without "accessTokenUrl"')
+      throw new Exception(
+        'Missing "config.accessTokenUrl". The property is required to generate access token'
+      )
     }
 
     /**
@@ -302,7 +315,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
      * We expect the response to have "oauth_token" and "oauth_token_secret"
      */
     if (!accessOauthToken || !accessOauthTokenSecret) {
-      throw OauthException.missingTokenAndSecret(parsed)
+      throw new MissingTokenException(MissingTokenException.oauth1Message, { cause: parsed })
     }
 
     return {

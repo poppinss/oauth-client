@@ -1,7 +1,7 @@
 /*
  * @poppinss/oauth-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Poppinss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -9,22 +9,16 @@
 
 import { DateTime } from 'luxon'
 
-export type KnownFields = 'grant_type' | 'redirect_uri' | 'client_id' | 'client_secret' | 'code'
-export type KnownParams = 'client_id' | 'redirect_uri' | 'oauth_token'
-export type KnownOauth1Params = 'oauth_verifier'
 export type KnownHeaders = 'Authorization'
-
-/**
- * ---------------------------------------------------
- * Independent types
- * ---------------------------------------------------
- */
+export type KnownOauth1Params = 'oauth_verifier'
+export type KnownParams = 'client_id' | 'redirect_uri' | 'oauth_token'
+export type KnownFields = 'grant_type' | 'redirect_uri' | 'client_id' | 'client_secret' | 'code'
 
 /**
  * Base request for making the redirect URL
  */
 export interface RedirectRequestContract {
-  params: Record<string, any>
+  getParams(): Record<string, any>
 
   /**
    * Define query string param
@@ -50,10 +44,15 @@ export interface RedirectRequestContract {
  * option to configure other values.
  */
 export interface ApiRequestContract {
-  params: Record<string, any>
-  headers: Record<string, any>
-  fields: Record<string, any>
-  oauth1Params: Record<string, any>
+  getParams(): Record<string, any>
+  getHeaders(): Record<string, any>
+  getFields(): Record<string, any>
+  getOauth1Params(): Record<string, any>
+
+  /**
+   * Define how to parse the response
+   */
+  parseAs(type: 'json' | 'text' | 'buffer'): this
 
   /**
    * Define query string param
@@ -184,4 +183,19 @@ export type Oauth1ClientConfig = Oauth2ClientConfig & {
    * Url for getting the oauthToken and secret before the redirect
    */
   requestTokenUrl?: string
+}
+
+/**
+ * Options accepted by the Oauth1 signature builder
+ */
+export type Oauth1SignatureOptions = {
+  consumerKey: string
+  consumerSecret: string
+  method: string
+  url: string
+  nonce: string
+  unixTimestamp: number
+  params?: any
+  oauthToken?: string
+  oauthTokenSecret?: string
 }
