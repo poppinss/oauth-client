@@ -8,9 +8,9 @@
  */
 
 import { parse } from 'node:querystring'
-import { Exception } from '@poppinss/utils'
 import string from '@poppinss/utils/string'
-import {
+import { RuntimeException } from '@poppinss/utils'
+import type {
   Oauth1AccessToken,
   Oauth1ClientConfig,
   ApiRequestContract,
@@ -191,7 +191,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     const requestTokenUrl = this.options.requestTokenUrl || this.requestTokenUrl
 
     if (!requestTokenUrl) {
-      throw new Exception(
+      throw new RuntimeException(
         'Missing "config.requestTokenUrl". The property is required to get request token'
       )
     }
@@ -237,7 +237,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
   getRedirectUrl(callback?: (request: RedirectRequestContract) => void): string | Promise<string> {
     const authorizeUrl = this.options.authorizeUrl || this.authorizeUrl
     if (!authorizeUrl) {
-      throw new Exception(
+      throw new RuntimeException(
         'Missing "config.authorizeUrl". The property is required to make redirect url'
       )
     }
@@ -279,19 +279,19 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
      * better security
      */
     if (!requestToken.token) {
-      throw new Exception(
+      throw new RuntimeException(
         'Missing "requestToken.token". The property is required to generate access token'
       )
     }
 
     if (!requestToken.secret) {
-      throw new Exception(
+      throw new RuntimeException(
         'Missing "requestToken.secret". The property is required to generate access token'
       )
     }
 
     if (!accessTokenUrl) {
-      throw new Exception(
+      throw new RuntimeException(
         'Missing "config.accessTokenUrl". The property is required to generate access token'
       )
     }

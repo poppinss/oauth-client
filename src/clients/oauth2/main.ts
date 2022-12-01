@@ -9,8 +9,8 @@
 
 import { DateTime } from 'luxon'
 import { parse } from 'node:querystring'
-import { Exception } from '@poppinss/utils'
 import string from '@poppinss/utils/string'
+import { RuntimeException } from '@poppinss/utils'
 
 import {
   Oauth2AccessToken,
@@ -96,7 +96,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
   getRedirectUrl(callback?: (request: RedirectRequestContract) => void): string | Promise<string> {
     const authorizeUrl = this.options.authorizeUrl || this.authorizeUrl
     if (!authorizeUrl) {
-      throw new Exception(
+      throw new RuntimeException(
         'Missing "config.authorizeUrl". The property is required to make redirect url'
       )
     }
@@ -159,7 +159,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
   async getAccessToken(callback?: (request: ApiRequestContract) => void): Promise<Token> {
     const accessTokenUrl = this.options.accessTokenUrl || this.accessTokenUrl
     if (!accessTokenUrl) {
-      throw new Exception(
+      throw new RuntimeException(
         'Missing "config.accessTokenUrl". The property is required to get access token'
       )
     }

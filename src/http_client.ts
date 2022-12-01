@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-import got, { CancelableRequest, Response } from 'got'
-import { ApiRequestContract } from './types.js'
+import got, { type CancelableRequest, type Response } from 'got'
+import type { ApiRequestContract } from './types.js'
 
 /**
  * An HTTP client abstraction we need for making OAuth requests
