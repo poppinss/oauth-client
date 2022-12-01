@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { DateTime } from 'luxon'
+import type { DateTime } from 'luxon'
 
 export type KnownHeaders = 'Authorization'
 export type KnownOauth1Params = 'oauth_verifier'
@@ -18,6 +18,10 @@ export type KnownFields = 'grant_type' | 'redirect_uri' | 'client_id' | 'client_
  * Base request for making the redirect URL
  */
 export interface RedirectRequestContract {
+  /**
+   * Returns an object of query string params set using
+   * the "param" method
+   */
   getParams(): Record<string, any>
 
   /**
@@ -44,9 +48,28 @@ export interface RedirectRequestContract {
  * option to configure other values.
  */
 export interface ApiRequestContract {
+  /**
+   * Returns an object of query string params set using
+   * the "param" method
+   */
   getParams(): Record<string, any>
+
+  /**
+   * Returns an object of request headers set using
+   * the "header" method
+   */
   getHeaders(): Record<string, any>
+
+  /**
+   * Returns an object of request form fields set using
+   * the "field" method
+   */
   getFields(): Record<string, any>
+
+  /**
+   * Returns an object of oauth1 signature params set using
+   * the "oauth1Param" method
+   */
   getOauth1Params(): Record<string, any>
 
   /**
@@ -130,17 +153,19 @@ export type Oauth2AccessToken = {
   type: string
 
   /**
-   * Refresh token
+   * Refresh token (not all servers returns refresh token)
    */
   refreshToken?: string
 
   /**
-   * Static time in seconds when the token will expire
+   * Static time in seconds when the token will expire. Usually
+   * exists, when there is a refresh token
    */
   expiresIn?: number
 
   /**
-   * Timestamp at which the token expires
+   * Timestamp at which the token expires. Usually
+   * exists, when there is a refresh token
    */
   expiresAt?: DateTime
 } & Record<string, any>
@@ -149,10 +174,32 @@ export type Oauth2AccessToken = {
  * Base config for Oauth2.0 client
  */
 export type Oauth2ClientConfig = {
+  /**
+   * Client id must be obtained by the authorization server.
+   */
   clientId: string
+
+  /**
+   * Client secret must be obtained by the authorization server.
+   */
   clientSecret: string
+
+  /**
+   * Callback URL to your server to handle the response after
+   * a user allows or rejects the OAuth request
+   */
   callbackUrl: string
+
+  /**
+   * The authorization server URL where the user should be
+   * redirected for the login consent.
+   */
   authorizeUrl?: string
+
+  /**
+   * The authorization server access token URL from where to exchange
+   * an access token post redirect.
+   */
   accessTokenUrl?: string
 }
 
@@ -180,7 +227,7 @@ export type Oauth1AccessToken = Oauth1RequestToken
  */
 export type Oauth1ClientConfig = Oauth2ClientConfig & {
   /**
-   * Url for getting the oauthToken and secret before the redirect
+   * URL for getting the oauth token and secret before the redirect
    */
   requestTokenUrl?: string
 }

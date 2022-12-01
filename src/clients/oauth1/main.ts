@@ -26,8 +26,7 @@ import { MissingTokenException } from '../../exceptions/missing_token.js'
 import { StateMisMatchException } from '../../exceptions/state_mismatch.js'
 
 /**
- * A generic implementation of Oauth1. One can use it directly with any
- * Oauth1.0 or Oauth1.0a server
+ * Generic implementation of Oauth1 three leged authorization flow.
  */
 export class Oauth1Client<Token extends Oauth1AccessToken> {
   constructor(public options: Oauth1ClientConfig) {}

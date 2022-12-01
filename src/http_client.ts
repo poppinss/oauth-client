@@ -17,11 +17,40 @@ import debug from './debug.js'
  */
 export class HttpClient implements ApiRequestContract {
   #baseUrl: string
+
+  /**
+   * Request string params
+   */
   #params: Record<string, any> = {}
+
+  /**
+   * Form fields to send
+   */
   #fields: Record<string, any> = {}
+
+  /**
+   * Headers to send
+   */
   #headers: Record<string, any> = {}
+
+  /**
+   * Oauth1 params
+   */
   #oauth1Params: Record<string, any> = {}
+
+  /**
+   * The request body type.
+   *
+   * - The content type will be set to `application/json`
+   *   for a json request type.
+   * - The content type will be set to `application/x-www-form-urlencoded`
+   *   for a urlencoded request type.
+   */
   #requestType: 'json' | 'urlencoded' = 'urlencoded'
+
+  /**
+   * Expected response body type.
+   */
   #responseType: 'json' | 'text' | 'buffer' = 'text'
 
   constructor(baseUrl: string) {

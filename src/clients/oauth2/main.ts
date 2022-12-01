@@ -26,7 +26,7 @@ import { StateMisMatchException } from '../../exceptions/state_mismatch.js'
 import debug from '../../debug.js'
 
 /**
- * A generic implementation of OAuth2. One can use it directly with any auth2.0 server
+ * Generic implementation of OAuth2.
  */
 export class Oauth2Client<Token extends Oauth2AccessToken> {
   constructor(public options: Oauth2ClientConfig) {}
