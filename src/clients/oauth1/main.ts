@@ -109,6 +109,9 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     /**
      * Set the oauth header
      */
+    if (debug.enabled) {
+      debug('oauth1 signature: %s', oauthHeader)
+    }
     httpClient.header('Authorization', `OAuth ${oauthHeader}`)
 
     /**
