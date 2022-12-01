@@ -460,6 +460,14 @@ export class TwitterDriver extends Oauth1Client {
 }
 ```
 
+## Known exceptions
+Following is the list of known exceptions raised by this package.
+
+- `MissingTokenException` - The exception is raised when:
+  - The OAuth2 authorization server does not return "access_token" value in the response.
+  - Or, the OAuth1 server does not return "oauth_token", and "oauth_token_secret" values in the response.
+- `StateMisMatchException` - The state mismatch exception is raised, when the state cookie does not match the state query param received post redirect.
+
 ## Clearing existing params or fields
 Both the `Oauth2Client` and `Oauth1Client` class defines the default params or form fields for different API requests. The defined values are usually applicable across Oauth providers. However, you can clear the defaults and define them manually yourself. For example:
 
@@ -491,7 +499,6 @@ The process remains the same for other values as well.
 - `request.clearOauth1Param` clears the Oauth1 param
 - `request.clearHeader` clears the existing header
 - `request.clearField` clears the form field
-
 
 ### Following is the list of fields/params set by the clients implicitly
 
