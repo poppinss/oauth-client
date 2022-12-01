@@ -69,7 +69,7 @@ This section covers the usage of the generic drivers directly within your applic
 #### Step 1. Instantiate the `Oauth2Client`
 
 ```ts
-import { Oauth2Client } from '@poppinss/utils'
+import { Oauth2Client } from '@poppinss/oauth-client'
 
 const client = new Oauth2Client({
   /**
@@ -157,7 +157,7 @@ This section covers the usage of the generic drivers directly within your applic
 #### Step 1. Instantiate the `Oauth1Client`
 
 ```ts
-import { Oauth1Client } from '@poppinss/utils'
+import { Oauth1Client } from '@poppinss/oauth-client'
 
 const client = new Oauth1Client({
   /**
@@ -282,6 +282,8 @@ export class GithubDriver extends Oauth2Client {
   }
 
   /**
+   * OPTIONAL
+   *
    * Self-process the client response.
    */
   protected processClientResponse(client: HttpClient, response: any): any {
