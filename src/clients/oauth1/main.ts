@@ -18,6 +18,7 @@ import type {
   RedirectRequestContract,
 } from '../../types.js'
 
+import debug from '../../debug.js'
 import { Oauth1Signature } from './signature.js'
 import { HttpClient } from '../../http_client.js'
 import { UrlBuilder } from '../../url_builder.js'
@@ -196,18 +197,28 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       )
     }
 
+    const requestTokenResponse = await this.makeSignedRequest(
+      requestTokenUrl,
+      'post',
+      undefined,
+      (request) => {
+        request.oauth1Param('oauth_callback', this.options.callbackUrl)
+        this.configureRequestTokenRequest(request)
+
+        if (typeof callback === 'function') {
+          callback(request)
+        }
+      }
+    )
+    if (debug.enabled) {
+      debug('oauth1 request token response %o', requestTokenResponse)
+    }
+
     const {
       oauth_token: oauthToken,
       oauth_token_secret: oauthTokenSecret,
       ...parsed
-    } = await this.makeSignedRequest(requestTokenUrl, 'post', undefined, (request) => {
-      request.oauth1Param('oauth_callback', this.options.callbackUrl)
-      this.configureRequestTokenRequest(request)
-
-      if (typeof callback === 'function') {
-        callback(request)
-      }
-    })
+    } = requestTokenResponse
 
     /**
      * We expect the response to have "oauth_token" and "oauth_token_secret"
@@ -254,7 +265,12 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       callback(urlBuilder)
     }
 
-    return urlBuilder.makeUrl()
+    const url = urlBuilder.makeUrl()
+    if (debug.enabled) {
+      debug('oauth1 redirect url: "%s"', url)
+    }
+
+    return url
   }
 
   /**
@@ -299,17 +315,27 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     /**
      * Make signed request.
      */
+    const accessTokenResponse = await this.makeSignedRequest(
+      accessTokenUrl,
+      'post',
+      requestToken,
+      (request) => {
+        this.configureAccessTokenRequest(request)
+
+        if (typeof callback === 'function') {
+          callback(request)
+        }
+      }
+    )
+    if (debug.enabled) {
+      debug('oauth1 access token response %o', accessTokenResponse)
+    }
+
     const {
       oauth_token: accessOauthToken,
       oauth_token_secret: accessOauthTokenSecret,
       ...parsed
-    } = await this.makeSignedRequest(accessTokenUrl, 'post', requestToken, (request) => {
-      this.configureAccessTokenRequest(request)
-
-      if (typeof callback === 'function') {
-        callback(request)
-      }
-    })
+    } = accessTokenResponse
 
     /**
      * We expect the response to have "oauth_token" and "oauth_token_secret"

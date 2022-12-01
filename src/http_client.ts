@@ -8,7 +8,9 @@
  */
 
 import got, { type CancelableRequest, type Response } from 'got'
+
 import type { ApiRequestContract } from './types.js'
+import debug from './debug.js'
 
 /**
  * An HTTP client abstraction we need for making OAuth requests
@@ -198,13 +200,25 @@ export class HttpClient implements ApiRequestContract {
    * Make a post request
    */
   async post(): Promise<any> {
-    return this.#getResponseBody(got.post(this.#baseUrl, this.#getGotOptions('POST')))
+    const options = this.#getGotOptions('POST')
+
+    if (debug.enabled) {
+      debug('making POST request url: "%s" options: %o', this.#baseUrl, options)
+    }
+
+    return this.#getResponseBody(got.post(this.#baseUrl, options))
   }
 
   /**
    * Make a get request
    */
   async get(): Promise<any> {
-    return this.#getResponseBody(got.get(this.#baseUrl, this.#getGotOptions('GET')))
+    const options = this.#getGotOptions('GET')
+
+    if (debug.enabled) {
+      debug('making GET request url: "%s" options:%o', this.#baseUrl, options)
+    }
+
+    return this.#getResponseBody(got.get(this.#baseUrl, options))
   }
 }

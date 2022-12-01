@@ -23,6 +23,7 @@ import { HttpClient } from '../../http_client.js'
 import { UrlBuilder } from '../../url_builder.js'
 import { MissingTokenException } from '../../exceptions/missing_token.js'
 import { StateMisMatchException } from '../../exceptions/state_mismatch.js'
+import debug from '../../debug.js'
 
 /**
  * A generic implementation of OAuth2. One can use it directly with any auth2.0 server
@@ -119,7 +120,12 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
       callback(urlBuilder)
     }
 
-    return urlBuilder.makeUrl()
+    const url = urlBuilder.makeUrl()
+    if (debug.enabled) {
+      debug('oauth2 redirect url: "%s"', url)
+    }
+
+    return url
   }
 
   /**
@@ -194,13 +200,18 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
      * Make request and parse response
      */
     const response = await httpClient.post()
+    const accessTokenResponse = this.processClientResponse(httpClient, response)
+    if (debug.enabled) {
+      debug('oauth2 access token response %o', accessTokenResponse)
+    }
+
     const {
       access_token: accessToken,
       token_type: tokenType,
       expires_in: expiresIn,
       refresh_token: refreshToken,
       ...parsed
-    } = this.processClientResponse(httpClient, response)
+    } = accessTokenResponse
 
     /**
      * We expect the response to have "access_token"
