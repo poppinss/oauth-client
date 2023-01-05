@@ -590,7 +590,7 @@ The Oauth1 specification has two types of parameters. One is added to the URL as
   Not right now 😬. The server-side implementations mainly use the <code>Authorization Code Grant </code> flow, and I want to keep this package focused on that only.
 </details>
 
-[gh-workflow-image]: https://img.shields.io/github/workflow/status/poppinss/oauth-client/test?style=for-the-badge
+[gh-workflow-image]: https://img.shields.io/github/actions/workflow/status/poppinss/oauth-client/test.yml?style=for-the-badge
 [gh-workflow-url]: https://github.com/poppinss/oauth-client/actions/workflows/test.yml "Github action"
 
 [npm-image]: https://img.shields.io/npm/v/@poppinss/oauth-client.svg?style=for-the-badge&logo=npm
