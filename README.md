@@ -69,7 +69,7 @@ This section covers the usage of the generic drivers directly within your applic
 #### Step 1. Instantiate the `Oauth2Client`
 
 ```ts
-import { Oauth2Client } from '@poppinss/oauth-client'
+import { Oauth2Client } from '@poppinss/oauth-client/oauth2'
 
 const client = new Oauth2Client({
   /**
@@ -142,7 +142,7 @@ The generated access token has the following parameters.
 - type (string): The token type
 - refreshToken (string): **Optional** and available when the provider supports it.
 - expiresIn (number): **Optional** and available when the provider supports it.
-- expiresAt (luxon.DateTime): **Optional** and exists when `expiresIn` exists.
+- expiresAt (Date): **Optional** and exists when `expiresIn` exists.
 
 All other response values are merged into the `accessToken` object, and you can access them directly. For example:
 
@@ -157,7 +157,7 @@ This section covers the usage of the generic drivers directly within your applic
 #### Step 1. Instantiate the `Oauth1Client`
 
 ```ts
-import { Oauth1Client } from '@poppinss/oauth-client'
+import { Oauth1Client } from '@poppinss/oauth-client/oauth1'
 
 const client = new Oauth1Client({
   /**
@@ -274,7 +274,9 @@ Following is the bare minimum setup for a custom driver. Using the lifecycle hoo
   - refresh_token Optional (string)
 
 ```ts
-import { Oauth2Client, Oauth2ClientConfig, HttpClient } from '@poppinss/oauth-client'
+import { HttpClient } from '@poppinss/oauth-client'
+import { Oauth2Client } from '@poppinss/oauth-client/oauth2'
+import { Oauth2ClientConfig } from '@poppinss/oauth-client/types'
 
 export class GithubDriver extends Oauth2Client {
   constructor(config: Oauth2ClientConfig) {
@@ -369,7 +371,9 @@ Following is the bare minimum setup for a custom driver. Using the lifecycle hoo
   The hook is called for both the `requestToken` and the `accessToken` API calls.
 
 ```ts
-import { Oauth1Client, Oauth1ClientConfig, HttpClient } from '@poppinss/oauth-client'
+import { HttpClient } from '@poppinss/oauth-client'
+import { Oauth1Client } from '@poppinss/oauth-client/oauth1'
+import { Oauth1ClientConfig } from '@poppinss/oauth-client/types'
 
 export class TwitterDriver extends Oauth1Client {
   constructor(config: Oauth1ClientConfig) {
@@ -563,16 +567,6 @@ The Oauth1 specification has two types of parameters. One is added to the URL as
 - And the `request.oauth1Param` method to define the Authorization header param.
 
 ## FAQs
-
-<details>
-  <summary>
-    <strong> Why are you using <code>got</code> and <code>luxon</code> dependencies? </strong>
-  </summary>
-
-  I use these dependencies in my apps, so having them inside a package is fine for me. Also, I am not a big fan of micro optimizing the dependencies size. At last, the code is not bundled for the browsers.
-
-  So having a better and stable API is more important than saving the 4 kilobytes.
-</details>
 
 <details>
   <summary>
