@@ -64,7 +64,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@poppinss/utils": "^6.5.0-2",
+    "@poppinss/utils": "^6.5.0-7",
     "@types/luxon": "^3.3.2",
     "got": "^13.0.0",
     "luxon": "^3.4.3"
