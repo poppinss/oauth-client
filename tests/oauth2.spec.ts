@@ -8,7 +8,6 @@
  */
 
 import nock from 'nock'
-import { DateTime } from 'luxon'
 import { test } from '@japa/runner'
 import { parse } from 'node:querystring'
 import { Oauth2Client } from '../src/clients/oauth2/main.js'
@@ -182,7 +181,7 @@ test.group('Oauth2Client | access token', () => {
     assert.containsSubset(response, { token: '1234', type: 'bearer' })
   })
 
-  test('generate "expirestAt" luxon instance from "expiresIn" property', async ({ assert }) => {
+  test('generate "expirestAt" date instance from "expiresIn" property', async ({ assert }) => {
     assert.plan(3)
 
     nock('https://oauth2.googleapis.com')
@@ -208,8 +207,8 @@ test.group('Oauth2Client | access token', () => {
     })
 
     const response = await request.getAccessToken((req) => req.param('code', '1234'))
-    assert.instanceOf(response.expiresAt, DateTime)
-    assert.isAbove(response.expiresAt!.diffNow('seconds').seconds, 0)
+    assert.instanceOf(response.expiresAt, Date)
+    assert.isAbove(response.expiresAt!.getTime(), new Date().getTime())
   })
 
   test('raise error when authorization server does not return access token', async ({ assert }) => {

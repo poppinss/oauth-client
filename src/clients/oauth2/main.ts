@@ -7,7 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import { DateTime } from 'luxon'
 import { parse } from 'node:querystring'
 import string from '@poppinss/utils/string'
 import { RuntimeException } from '@poppinss/utils'
@@ -19,11 +18,11 @@ import {
   RedirectRequestContract,
 } from '../../types.js'
 
+import debug from '../../debug.js'
 import { HttpClient } from '../../http_client.js'
 import { UrlBuilder } from '../../url_builder.js'
 import { MissingTokenException } from '../../exceptions/missing_token.js'
 import { StateMisMatchException } from '../../exceptions/state_mismatch.js'
-import debug from '../../debug.js'
 
 /**
  * Generic implementation of OAuth2.
@@ -224,7 +223,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
       token: accessToken,
       type: tokenType,
       expiresIn,
-      ...(expiresIn ? { expiresAt: DateTime.local().plus({ seconds: expiresIn }) } : {}),
+      ...(expiresIn ? { expiresAt: new Date(new Date().getTime() + 1000 * expiresIn) } : {}),
       refreshToken,
       ...parsed,
     }

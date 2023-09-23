@@ -7,8 +7,6 @@
  * file that was distributed with this source code.
  */
 
-import type { DateTime } from 'luxon'
-
 export type KnownHeaders = 'Authorization'
 export type KnownOauth1Params = 'oauth_verifier'
 export type KnownParams = 'client_id' | 'redirect_uri' | 'oauth_token'
@@ -167,7 +165,7 @@ export type Oauth2AccessToken = {
    * Timestamp at which the token expires. Usually
    * exists, when there is a refresh token
    */
-  expiresAt?: DateTime
+  expiresAt?: Date
 } & Record<string, any>
 
 /**
