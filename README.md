@@ -1,7 +1,7 @@
 # @poppinss/oauth-client
 > A framework agnostic package to implement "Login with" flow using OAuth compliant authorization servers.
 
-[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url] [![synk-image]][synk-url]
+[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url]
 
 This package ships with the implementation of `OAuth1.0 - three-legged flow` and `OAuth2.0 - Authorization Code Grant` flows. You can use it to build "Login with" flow in your Node.js applications.
 
@@ -590,8 +590,8 @@ The Oauth1 specification has two types of parameters. One is added to the URL as
   Not right now 😬. The server-side implementations mainly use the <code>Authorization Code Grant </code> flow, and I want to keep this package focused on that only.
 </details>
 
-[gh-workflow-image]: https://img.shields.io/github/actions/workflow/status/poppinss/oauth-client/test.yml?style=for-the-badge
-[gh-workflow-url]: https://github.com/poppinss/oauth-client/actions/workflows/test.yml "Github action"
+[gh-workflow-image]: https://img.shields.io/github/actions/workflow/status/poppinss/oauth-client/checks.yml?style=for-the-badge
+[gh-workflow-url]: https://github.com/poppinss/oauth-client/actions/workflows/checks.yml "Github action"
 
 [npm-image]: https://img.shields.io/npm/v/@poppinss/oauth-client.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/@poppinss/oauth-client "npm"
@@ -601,6 +601,3 @@ The Oauth1 specification has two types of parameters. One is added to the URL as
 
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
 [typescript-url]:  "typescript"
-
-[synk-image]: https://img.shields.io/snyk/vulnerabilities/github/poppinss/oauth-client?label=Synk%20Vulnerabilities&style=for-the-badge
-[synk-url]: https://snyk.io/test/github/poppinss/oauth-client?targetFile=package.json "synk"
