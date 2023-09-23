@@ -21,8 +21,7 @@ import {
 import debug from '../../debug.js'
 import { HttpClient } from '../../http_client.js'
 import { UrlBuilder } from '../../url_builder.js'
-import { MissingTokenException } from '../../exceptions/missing_token.js'
-import { StateMisMatchException } from '../../exceptions/state_mismatch.js'
+import { E_OAUTH_MISSING_TOKEN, E_OAUTH_STATE_MISMATCH } from '../../errors.js'
 
 /**
  * Generic implementation of OAuth2.
@@ -140,7 +139,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
    */
   verifyState(state: string, inputValue?: string) {
     if (!state || state !== inputValue) {
-      throw new StateMisMatchException()
+      throw new E_OAUTH_STATE_MISMATCH()
     }
   }
 
@@ -216,7 +215,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
      * We expect the response to have "access_token"
      */
     if (!accessToken) {
-      throw new MissingTokenException(MissingTokenException.oauth2Message, { cause: parsed })
+      throw new E_OAUTH_MISSING_TOKEN(E_OAUTH_MISSING_TOKEN.oauth2Message, { cause: parsed })
     }
 
     return {

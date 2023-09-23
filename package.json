@@ -11,6 +11,8 @@
   ],
   "exports": {
     ".": "./build/index.js",
+    "./oauth1": "./build/src/clients/oauth1/main.js",
+    "./oauth2": "./build/src/clients/oauth2/main.js",
     "./types": "./build/src/types.js"
   },
   "engines": {

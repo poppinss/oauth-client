@@ -22,8 +22,7 @@ import debug from '../../debug.js'
 import { Oauth1Signature } from './signature.js'
 import { HttpClient } from '../../http_client.js'
 import { UrlBuilder } from '../../url_builder.js'
-import { MissingTokenException } from '../../exceptions/missing_token.js'
-import { StateMisMatchException } from '../../exceptions/state_mismatch.js'
+import { E_OAUTH_MISSING_TOKEN, E_OAUTH_STATE_MISMATCH } from '../../errors.js'
 
 /**
  * Generic implementation of Oauth1 three leged authorization flow.
@@ -181,7 +180,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
    */
   verifyState(state: string, inputValue?: string) {
     if (!state || state !== inputValue) {
-      throw new StateMisMatchException()
+      throw new E_OAUTH_STATE_MISMATCH()
     }
   }
 
@@ -226,7 +225,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
      * We expect the response to have "oauth_token" and "oauth_token_secret"
      */
     if (!oauthToken || !oauthTokenSecret) {
-      throw new MissingTokenException(MissingTokenException.oauth1Message, { cause: parsed })
+      throw new E_OAUTH_MISSING_TOKEN(E_OAUTH_MISSING_TOKEN.oauth1Message, { cause: parsed })
     }
 
     return {
@@ -343,7 +342,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
      * We expect the response to have "oauth_token" and "oauth_token_secret"
      */
     if (!accessOauthToken || !accessOauthTokenSecret) {
-      throw new MissingTokenException(MissingTokenException.oauth1Message, { cause: parsed })
+      throw new E_OAUTH_MISSING_TOKEN(E_OAUTH_MISSING_TOKEN.oauth1Message, { cause: parsed })
     }
 
     return {

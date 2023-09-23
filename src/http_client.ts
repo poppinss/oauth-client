@@ -9,8 +9,8 @@
 
 import got, { type CancelableRequest, type Response } from 'got'
 
-import type { ApiRequestContract } from './types.js'
 import debug from './debug.js'
+import type { ApiRequestContract } from './types.js'
 
 /**
  * An HTTP client abstraction we need for making OAuth requests

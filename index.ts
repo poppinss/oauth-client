@@ -7,9 +7,6 @@
  * file that was distributed with this source code.
  */
 
+export * as errors from './src/errors.js'
 export { HttpClient } from './src/http_client.js'
 export { UrlBuilder } from './src/url_builder.js'
-export { Oauth1Client } from './src/clients/oauth1/main.js'
-export { Oauth2Client } from './src/clients/oauth2/main.js'
-export { MissingTokenException } from './src/exceptions/missing_token.js'
-export { StateMisMatchException } from './src/exceptions/state_mismatch.js'
