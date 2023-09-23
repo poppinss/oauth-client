@@ -1,6 +1,6 @@
 {
   "name": "@poppinss/oauth-client",
-  "version": "5.1.0-3",
+  "version": "5.1.0-4",
   "description": "A framework agnostic package to implement \"Login with\" flow using OAuth compliant authorization servers.",
   "main": "build/index.js",
   "type": "module",
