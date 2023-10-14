@@ -1,30 +1,26 @@
 /*
  * @poppinss/oauth-client
  *
- * (c) Harminder Virk <virk@adonisjs.com>
+ * (c) Poppinss
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-import { DateTime } from 'luxon'
-
-export type KnownFields = 'grant_type' | 'redirect_uri' | 'client_id' | 'client_secret' | 'code'
-export type KnownParams = 'client_id' | 'redirect_uri' | 'oauth_token'
-export type KnownOauth1Params = 'oauth_verifier'
 export type KnownHeaders = 'Authorization'
-
-/**
- * ---------------------------------------------------
- * Independent types
- * ---------------------------------------------------
- */
+export type KnownOauth1Params = 'oauth_verifier'
+export type KnownParams = 'client_id' | 'redirect_uri' | 'oauth_token'
+export type KnownFields = 'grant_type' | 'redirect_uri' | 'client_id' | 'client_secret' | 'code'
 
 /**
  * Base request for making the redirect URL
  */
 export interface RedirectRequestContract {
-  params: Record<string, any>
+  /**
+   * Returns an object of query string params set using
+   * the "param" method
+   */
+  getParams(): Record<string, any>
 
   /**
    * Define query string param
@@ -50,10 +46,34 @@ export interface RedirectRequestContract {
  * option to configure other values.
  */
 export interface ApiRequestContract {
-  params: Record<string, any>
-  headers: Record<string, any>
-  fields: Record<string, any>
-  oauth1Params: Record<string, any>
+  /**
+   * Returns an object of query string params set using
+   * the "param" method
+   */
+  getParams(): Record<string, any>
+
+  /**
+   * Returns an object of request headers set using
+   * the "header" method
+   */
+  getHeaders(): Record<string, any>
+
+  /**
+   * Returns an object of request form fields set using
+   * the "field" method
+   */
+  getFields(): Record<string, any>
+
+  /**
+   * Returns an object of oauth1 signature params set using
+   * the "oauth1Param" method
+   */
+  getOauth1Params(): Record<string, any>
+
+  /**
+   * Define how to parse the response
+   */
+  parseAs(type: 'json' | 'text' | 'buffer'): this
 
   /**
    * Define query string param
@@ -131,29 +151,53 @@ export type Oauth2AccessToken = {
   type: string
 
   /**
-   * Refresh token
+   * Refresh token (not all servers returns refresh token)
    */
   refreshToken?: string
 
   /**
-   * Static time in seconds when the token will expire
+   * Static time in seconds when the token will expire. Usually
+   * exists, when there is a refresh token
    */
   expiresIn?: number
 
   /**
-   * Timestamp at which the token expires
+   * Timestamp at which the token expires. Usually
+   * exists, when there is a refresh token
    */
-  expiresAt?: DateTime
+  expiresAt?: Date
 } & Record<string, any>
 
 /**
  * Base config for Oauth2.0 client
  */
 export type Oauth2ClientConfig = {
+  /**
+   * Client id must be obtained by the authorization server.
+   */
   clientId: string
+
+  /**
+   * Client secret must be obtained by the authorization server.
+   */
   clientSecret: string
+
+  /**
+   * Callback URL to your server to handle the response after
+   * a user allows or rejects the OAuth request
+   */
   callbackUrl: string
+
+  /**
+   * The authorization server URL where the user should be
+   * redirected for the login consent.
+   */
   authorizeUrl?: string
+
+  /**
+   * The authorization server access token URL from where to exchange
+   * an access token post redirect.
+   */
   accessTokenUrl?: string
 }
 
@@ -181,7 +225,22 @@ export type Oauth1AccessToken = Oauth1RequestToken
  */
 export type Oauth1ClientConfig = Oauth2ClientConfig & {
   /**
-   * Url for getting the oauthToken and secret before the redirect
+   * URL for getting the oauth token and secret before the redirect
    */
   requestTokenUrl?: string
+}
+
+/**
+ * Options accepted by the Oauth1 signature builder
+ */
+export type Oauth1SignatureOptions = {
+  consumerKey: string
+  consumerSecret: string
+  method: string
+  url: string
+  nonce: string
+  unixTimestamp: number
+  params?: any
+  oauthToken?: string
+  oauthTokenSecret?: string
 }

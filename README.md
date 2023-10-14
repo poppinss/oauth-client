@@ -1,9 +1,7 @@
-<div align="center"><img src="https://res.cloudinary.com/adonisjs/image/upload/q_100/v1557762307/poppinss_iftxlt.jpg" width="600px"></div>
-
-# Oauth Client
+# @poppinss/oauth-client
 > A framework agnostic package to implement "Login with" flow using OAuth compliant authorization servers.
 
-[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url] [![synk-image]][synk-url]
+[![gh-workflow-image]][gh-workflow-url] [![npm-image]][npm-url] [![license-image]][license-url] [![typescript-image]][typescript-url]
 
 This package ships with the implementation of `OAuth1.0 - three-legged flow` and `OAuth2.0 - Authorization Code Grant` flows. You can use it to build "Login with" flow in your Node.js applications.
 
@@ -11,33 +9,6 @@ This package ships with the implementation of `OAuth1.0 - three-legged flow` and
 - Ships with generic implementations that can be used to login with any identity provider.
 - Simple to use and intuitive APIs.
 - Intellisense all the way - The code is written in Typescript
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-## Table of contents
-
-- [Motivation](#motivation)
-- [Who should use this package?](#who-should-use-this-package)
-- [Installation](#installation)
-    - [👉 Real examples](#-real-examples)
-- [OAuth2 direct usage](#oauth2-direct-usage)
-    - [Step 1. Instantiate the `Oauth2Client`](#step-1-instantiate-the-oauth2client)
-    - [Step 2. Generate the redirect URL](#step-2-generate-the-redirect-url)
-    - [Step 3. Redirect user to the URL](#step-3-redirect-user-to-the-url)
-    - [Step 4. Handle post-authorization callback](#step-4-handle-post-authorization-callback)
-- [OAuth1 direct usage](#oauth1-direct-usage)
-    - [Step 1. Instantiate the `Oauth1Client`](#step-1-instantiate-the-oauth1client)
-    - [Step 2. Generate the request token](#step-2-generate-the-request-token)
-    - [Step 3. Redirect user to the URL](#step-3-redirect-user-to-the-url-1)
-    - [Step 4. Handle post-authorization callback](#step-4-handle-post-authorization-callback-1)
-- [Creating a custom Oauth2.0 driver](#creating-a-custom-oauth20-driver)
-- [Creating a custom Oauth1.0 driver](#creating-a-custom-oauth10-driver)
-- [Clearing existing params or fields](#clearing-existing-params-or-fields)
-  - [Following is the list of fields/params set by the clients implicitly](#following-is-the-list-of-fieldsparams-set-by-the-clients-implicitly)
-- [Difference with Oauth1Param and param](#difference-with-oauth1param-and-param)
-- [FAQs](#faqs)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Motivation
 The motivation for this package is to have a framework-agnostic implementation for the protocols themselves. The passportjs ecosystem relies heavily on the Express framework.
@@ -98,7 +69,7 @@ This section covers the usage of the generic drivers directly within your applic
 #### Step 1. Instantiate the `Oauth2Client`
 
 ```ts
-import { Oauth2Client } from '@poppinss/utils'
+import { Oauth2Client } from '@poppinss/oauth-client/oauth2'
 
 const client = new Oauth2Client({
   /**
@@ -171,7 +142,7 @@ The generated access token has the following parameters.
 - type (string): The token type
 - refreshToken (string): **Optional** and available when the provider supports it.
 - expiresIn (number): **Optional** and available when the provider supports it.
-- expiresAt (luxon.DateTime): **Optional** and exists when `expiresIn` exists.
+- expiresAt (Date): **Optional** and exists when `expiresIn` exists.
 
 All other response values are merged into the `accessToken` object, and you can access them directly. For example:
 
@@ -186,7 +157,7 @@ This section covers the usage of the generic drivers directly within your applic
 #### Step 1. Instantiate the `Oauth1Client`
 
 ```ts
-import { Oauth1Client } from '@poppinss/utils'
+import { Oauth1Client } from '@poppinss/oauth-client/oauth1'
 
 const client = new Oauth1Client({
   /**
@@ -303,7 +274,9 @@ Following is the bare minimum setup for a custom driver. Using the lifecycle hoo
   - refresh_token Optional (string)
 
 ```ts
-import { Oauth2Client, Oauth2ClientConfig, HttpClient } from '@poppinss/oauth-client'
+import { HttpClient } from '@poppinss/oauth-client'
+import { Oauth2Client } from '@poppinss/oauth-client/oauth2'
+import { Oauth2ClientConfig } from '@poppinss/oauth-client/types'
 
 export class GithubDriver extends Oauth2Client {
   constructor(config: Oauth2ClientConfig) {
@@ -311,6 +284,8 @@ export class GithubDriver extends Oauth2Client {
   }
 
   /**
+   * OPTIONAL
+   *
    * Self-process the client response.
    */
   protected processClientResponse(client: HttpClient, response: any): any {
@@ -396,7 +371,9 @@ Following is the bare minimum setup for a custom driver. Using the lifecycle hoo
   The hook is called for both the `requestToken` and the `accessToken` API calls.
 
 ```ts
-import { Oauth1Client, Oauth1ClientConfig, HttpClient } from '@poppinss/oauth-client'
+import { HttpClient } from '@poppinss/oauth-client'
+import { Oauth1Client } from '@poppinss/oauth-client/oauth1'
+import { Oauth1ClientConfig } from '@poppinss/oauth-client/types'
 
 export class TwitterDriver extends Oauth1Client {
   constructor(config: Oauth1ClientConfig) {
@@ -487,6 +464,14 @@ export class TwitterDriver extends Oauth1Client {
 }
 ```
 
+## Known exceptions
+Following is the list of known exceptions raised by this package.
+
+- `MissingTokenException` - The exception is raised when:
+  - The OAuth2 authorization server does not return "access_token" value in the response.
+  - Or, the OAuth1 server does not return "oauth_token", and "oauth_token_secret" values in the response.
+- `StateMisMatchException` - The state mismatch exception is raised, when the state cookie does not match the state query param received post redirect.
+
 ## Clearing existing params or fields
 Both the `Oauth2Client` and `Oauth1Client` class defines the default params or form fields for different API requests. The defined values are usually applicable across Oauth providers. However, you can clear the defaults and define them manually yourself. For example:
 
@@ -518,7 +503,6 @@ The process remains the same for other values as well.
 - `request.clearOauth1Param` clears the Oauth1 param
 - `request.clearHeader` clears the existing header
 - `request.clearField` clears the form field
-
 
 ### Following is the list of fields/params set by the clients implicitly
 
@@ -586,16 +570,6 @@ The Oauth1 specification has two types of parameters. One is added to the URL as
 
 <details>
   <summary>
-    <strong> Why are you using <code>got</code> and <code>luxon</code> dependencies? </strong>
-  </summary>
-
-  I use these dependencies in my apps, so having them inside a package is fine for me. Also, I am not a big fan of micro optimizing the dependencies size. At last, the code is not bundled for the browsers.
-
-  So having a better and stable API is more important than saving the 4 kilobytes.
-</details>
-
-<details>
-  <summary>
     <strong> What's wrong with Passportjs? </strong>
   </summary>
 
@@ -610,8 +584,8 @@ The Oauth1 specification has two types of parameters. One is added to the URL as
   Not right now 😬. The server-side implementations mainly use the <code>Authorization Code Grant </code> flow, and I want to keep this package focused on that only.
 </details>
 
-[gh-workflow-image]: https://img.shields.io/github/workflow/status/poppinss/oauth-client/test?style=for-the-badge
-[gh-workflow-url]: https://github.com/poppinss/oauth-client/actions/workflows/test.yml "Github action"
+[gh-workflow-image]: https://img.shields.io/github/actions/workflow/status/poppinss/oauth-client/checks.yml?style=for-the-badge
+[gh-workflow-url]: https://github.com/poppinss/oauth-client/actions/workflows/checks.yml "Github action"
 
 [npm-image]: https://img.shields.io/npm/v/@poppinss/oauth-client.svg?style=for-the-badge&logo=npm
 [npm-url]: https://npmjs.org/package/@poppinss/oauth-client "npm"
@@ -621,6 +595,3 @@ The Oauth1 specification has two types of parameters. One is added to the URL as
 
 [typescript-image]: https://img.shields.io/badge/Typescript-294E80.svg?style=for-the-badge&logo=typescript
 [typescript-url]:  "typescript"
-
-[synk-image]: https://img.shields.io/snyk/vulnerabilities/github/poppinss/oauth-client?label=Synk%20Vulnerabilities&style=for-the-badge
-[synk-url]: https://snyk.io/test/github/poppinss/oauth-client?targetFile=package.json "synk"

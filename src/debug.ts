@@ -7,6 +7,6 @@
  * file that was distributed with this source code.
  */
 
-export * as errors from './src/errors.js'
-export { HttpClient } from './src/http_client.js'
-export { UrlBuilder } from './src/url_builder.js'
+import { debuglog } from 'node:util'
+
+export default debuglog('oauth_client')
