@@ -24,7 +24,7 @@ test.group('HttpClient', () => {
     assert.equal(response, 'Handled')
   })
 
-  test('send request body', async ({ assert }) => {
+  test('send request body in POST request', async ({ assert }) => {
     assert.plan(2)
 
     nock('https://www.foo.com')
@@ -189,7 +189,7 @@ test.group('HttpClient', () => {
     assert.deepEqual(response, { username: 'virk' })
   })
 
-  test('get response as buffer', async ({ assert }) => {
+  test('get response as text', async ({ assert }) => {
     nock('https://www.foo.com')
       .get('/request')
       .reply(function () {
@@ -197,8 +197,8 @@ test.group('HttpClient', () => {
       })
 
     const client = new HttpClient('https://www.foo.com/request')
-    const response = await client.parseAs('buffer').get()
-    assert.equal(response.toString('utf-8'), 'Handled')
+    const response = await client.parseAs('text').get()
+    assert.equal(response, 'Handled')
   })
 
   test('clear oauth1Param', async ({ assert }) => {

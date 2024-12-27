@@ -64,6 +64,87 @@ test.group('Oauth1Client | request token', () => {
     assert.equal(token.token, '1')
     assert.equal(token.secret, 'foo')
   })
+
+  test('should pass oauth params from the urlencoded request body', async ({ assert }) => {
+    assert.plan(9)
+
+    nock('https://www.twitter.com')
+      .post('/request_token')
+      .reply(function () {
+        const authorization = this.req.headers.authorization.replace('OAuth ', '').split(',')
+        const payload = authorization.reduce((result: Record<string, string>, token: string) => {
+          const [key, value] = token.split('=')
+          result[key] = value.slice(1).slice(0, -1)
+          return result
+        }, {})
+
+        assert.property(payload, 'oauth_field')
+        assert.property(payload, 'oauth_consumer_key')
+        assert.property(payload, 'oauth_nonce')
+        assert.property(payload, 'oauth_signature')
+        assert.property(payload, 'oauth_timestamp')
+        assert.equal(payload.oauth_version, '1.0')
+        assert.equal(payload.oauth_signature_method, 'HMAC-SHA1')
+
+        return [200, 'oauth_token=1&oauth_token_secret=foo']
+      })
+
+    const request = new Oauth1Client({
+      requestTokenUrl: 'https://www.twitter.com/request_token',
+      callbackUrl: '',
+      authorizeUrl: '',
+      accessTokenUrl: '',
+      clientId: 'a-dummy-consumer-key',
+      clientSecret: 'a-dummy-consumer-secret',
+    })
+
+    const token = await request.getRequestToken((req) => {
+      req.field('oauth_field', 'true')
+    })
+    assert.equal(token.token, '1')
+    assert.equal(token.secret, 'foo')
+  })
+
+  test('should not pass oauth params from the json request body', async ({ assert }) => {
+    assert.plan(9)
+
+    nock('https://www.twitter.com')
+      .post('/request_token')
+      .reply(function () {
+        const authorization = this.req.headers.authorization.replace('OAuth ', '').split(',')
+        const payload = authorization.reduce((result: Record<string, string>, token: string) => {
+          const [key, value] = token.split('=')
+          result[key] = value.slice(1).slice(0, -1)
+          return result
+        }, {})
+
+        assert.notProperty(payload, 'oauth_field')
+        assert.property(payload, 'oauth_consumer_key')
+        assert.property(payload, 'oauth_nonce')
+        assert.property(payload, 'oauth_signature')
+        assert.property(payload, 'oauth_timestamp')
+        assert.equal(payload.oauth_version, '1.0')
+        assert.equal(payload.oauth_signature_method, 'HMAC-SHA1')
+
+        return [200, 'oauth_token=1&oauth_token_secret=foo']
+      })
+
+    const request = new Oauth1Client({
+      requestTokenUrl: 'https://www.twitter.com/request_token',
+      callbackUrl: '',
+      authorizeUrl: '',
+      accessTokenUrl: '',
+      clientId: 'a-dummy-consumer-key',
+      clientSecret: 'a-dummy-consumer-secret',
+    })
+
+    const token = await request.getRequestToken((req) => {
+      req.field('oauth_field', 'true').sendAs('json')
+    })
+    assert.equal(token.token, '1')
+    assert.equal(token.secret, 'foo')
+  })
+
   test('pass extra oauth params to the oauth server', async ({ assert }) => {
     assert.plan(9)
 
@@ -558,7 +639,7 @@ test.group('Oauth1Request | access token', () => {
     assert.equal(token.secret, '1')
   })
 
-  test('handle buffer response from the authorization server', async ({ assert }) => {
+  test('handle text response from the authorization server', async ({ assert }) => {
     assert.plan(9)
 
     nock('https://www.twitter.com')
@@ -591,13 +672,10 @@ test.group('Oauth1Request | access token', () => {
       clientSecret: 'a-dummy-consumer-secret',
     })
 
-    const token = await request.getAccessToken(
-      {
-        token: 'foo',
-        secret: 'bar',
-      },
-      (req) => req.parseAs('buffer')
-    )
+    const token = await request.getAccessToken({
+      token: 'foo',
+      secret: 'bar',
+    })
     assert.equal(token.token, '1')
     assert.equal(token.secret, 'foo')
   })

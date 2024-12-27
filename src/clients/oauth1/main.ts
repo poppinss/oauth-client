@@ -97,7 +97,9 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
         ...httpClient.getParams(),
         ...httpClient.getOauth1Params(),
         /**
-         * Send request body when as urlencoded query string
+         * Consider URLEncoded request body when creating signature header.
+         * However, the fields from JSON body should not be included
+         * in the signature base string.
          * https://oauth1.wp-api.org/docs/basics/Signing.html#json-data
          */
         ...(httpClient.getRequestType() === 'urlencoded' ? httpClient.getFields() : {}),
@@ -108,9 +110,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     /**
      * Set the oauth header
      */
-    if (debug.enabled) {
-      debug('oauth1 signature: %s', oauthHeader)
-    }
+    debug('oauth1 signature: %s', oauthHeader)
     httpClient.header('Authorization', `OAuth ${oauthHeader}`)
 
     /**
@@ -158,7 +158,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       return response
     }
 
-    return parse(client.getResponseType() === 'buffer' ? response.toString() : response)
+    return parse(response)
   }
 
   /**
@@ -211,10 +211,8 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
         }
       }
     )
-    if (debug.enabled) {
-      debug('oauth1 request token response %o', requestTokenResponse)
-    }
 
+    debug('oauth1 request token response %O', requestTokenResponse)
     const {
       oauth_token: oauthToken,
       oauth_token_secret: oauthTokenSecret,
@@ -267,9 +265,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
     }
 
     const url = urlBuilder.makeUrl()
-    if (debug.enabled) {
-      debug('oauth1 redirect url: "%s"', url)
-    }
+    debug('oauth1 redirect url: "%s"', url)
 
     return url
   }
@@ -328,9 +324,8 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
         }
       }
     )
-    if (debug.enabled) {
-      debug('oauth1 access token response %o', accessTokenResponse)
-    }
+
+    debug('oauth1 access token response %O', accessTokenResponse)
 
     const {
       oauth_token: accessOauthToken,

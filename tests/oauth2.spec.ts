@@ -149,7 +149,7 @@ test.group('Oauth2Client | access token', () => {
     assert.containsSubset(response, { token: '1234', type: 'bearer' })
   })
 
-  test('parse buffer response from the server', async ({ assert }) => {
+  test('parse text response from the server', async ({ assert }) => {
     assert.plan(2)
 
     nock('https://oauth2.googleapis.com')
@@ -176,7 +176,7 @@ test.group('Oauth2Client | access token', () => {
 
     const response = await request.getAccessToken((req) => {
       req.param('code', '1234')
-      req.parseAs('buffer')
+      req.parseAs('text')
     })
     assert.containsSubset(response, { token: '1234', type: 'bearer' })
   })

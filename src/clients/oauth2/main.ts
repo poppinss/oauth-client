@@ -51,7 +51,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
       return response
     }
 
-    return parse(client.getResponseType() === 'buffer' ? response.toString() : response)
+    return parse(response)
   }
 
   /**
@@ -119,9 +119,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
     }
 
     const url = urlBuilder.makeUrl()
-    if (debug.enabled) {
-      debug('oauth2 redirect url: "%s"', url)
-    }
+    debug('oauth2 redirect url: "%s"', url)
 
     return url
   }
@@ -199,9 +197,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
      */
     const response = await httpClient.post()
     const accessTokenResponse = this.processClientResponse(httpClient, response)
-    if (debug.enabled) {
-      debug('oauth2 access token response %o', accessTokenResponse)
-    }
+    debug('oauth2 access token response %O', accessTokenResponse)
 
     const {
       access_token: accessToken,

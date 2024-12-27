@@ -73,7 +73,12 @@ export interface ApiRequestContract {
   /**
    * Define how to parse the response
    */
-  parseAs(type: 'json' | 'text' | 'buffer'): this
+  parseAs(type: 'json' | 'text'): this
+
+  /**
+   * Set the request content type
+   */
+  sendAs(type: 'json' | 'urlencoded'): this
 
   /**
    * Define query string param

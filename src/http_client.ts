@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import got, { type CancelableRequest, type Response } from 'got'
+import ky, { type ResponsePromise, type Options } from 'ky'
 
 import debug from './debug.js'
 import type { ApiRequestContract } from './types.js'
@@ -51,7 +51,7 @@ export class HttpClient implements ApiRequestContract {
   /**
    * Expected response body type.
    */
-  #responseType: 'json' | 'text' | 'buffer' = 'text'
+  #responseType: 'json' | 'text' = 'text'
 
   constructor(baseUrl: string) {
     this.#baseUrl = baseUrl
@@ -60,16 +60,17 @@ export class HttpClient implements ApiRequestContract {
   /**
    * Returns the got options for the request
    */
-  #getGotOptions(requestMethod: 'GET' | 'POST') {
+  #getRequestOptions(): Options {
     const hasBody = Object.keys(this.#fields).length > 0
+    const hasParams = Object.keys(this.#params).length > 0
+
     return {
       ...(hasBody
         ? this.#requestType === 'json'
           ? { json: this.#fields }
-          : { form: this.#fields }
+          : { body: new URLSearchParams(this.#fields) }
         : {}),
-      searchParams: this.#params,
-      allowGetBody: requestMethod === 'GET' && hasBody,
+      ...(hasParams ? { searchParams: this.#params } : {}),
       headers: this.#headers,
     }
   }
@@ -77,16 +78,12 @@ export class HttpClient implements ApiRequestContract {
   /**
    * Returns the response body of the got instance
    */
-  #getResponseBody(request: CancelableRequest<Response>) {
+  #getResponseBody(request: ResponsePromise) {
     if (this.#responseType === 'json') {
       return request.json()
     }
 
-    if (this.#responseType === 'text') {
-      return request.text()
-    }
-
-    return request.buffer()
+    return request.text()
   }
 
   /**
@@ -197,7 +194,7 @@ export class HttpClient implements ApiRequestContract {
   }
 
   /**
-   * Set the request content type using a shortcut.
+   * Set the request content type.
    */
   sendAs(type: 'json' | 'urlencoded'): this {
     this.#requestType = type
@@ -207,7 +204,7 @@ export class HttpClient implements ApiRequestContract {
   /**
    * Define how to parse the response
    */
-  parseAs(type: 'json' | 'text' | 'buffer'): this {
+  parseAs(type: 'json' | 'text'): this {
     this.#responseType = type
     return this
   }
@@ -229,25 +226,19 @@ export class HttpClient implements ApiRequestContract {
    * Make a post request
    */
   async post(): Promise<any> {
-    const options = this.#getGotOptions('POST')
+    const options = this.#getRequestOptions()
+    debug('making POST request url: "%s" options: %O', this.#baseUrl, options)
 
-    if (debug.enabled) {
-      debug('making POST request url: "%s" options: %o', this.#baseUrl, options)
-    }
-
-    return this.#getResponseBody(got.post(this.#baseUrl, options))
+    return this.#getResponseBody(ky.post(this.#baseUrl, options))
   }
 
   /**
    * Make a get request
    */
   async get(): Promise<any> {
-    const options = this.#getGotOptions('GET')
+    const options = this.#getRequestOptions()
+    debug('making GET request url: "%s" options:%O', this.#baseUrl, options)
 
-    if (debug.enabled) {
-      debug('making GET request url: "%s" options:%o', this.#baseUrl, options)
-    }
-
-    return this.#getResponseBody(got.get(this.#baseUrl, options))
+    return this.#getResponseBody(ky.get(this.#baseUrl, options))
   }
 }
