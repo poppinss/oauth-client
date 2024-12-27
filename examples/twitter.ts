@@ -13,27 +13,32 @@ import { twitterConfig } from './config.js'
 import { Oauth1Client } from '../src/clients/oauth1/main.js'
 
 export async function renderRedirect(_: Request, res: Response) {
-  /**
-   * Instantiate the driver
-   */
-  const driver = new Oauth1Client(twitterConfig)
+  try {
+    /**
+     * Instantiate the driver
+     */
+    const driver = new Oauth1Client(twitterConfig)
 
-  const { token, secret } = await driver.getRequestToken()
+    const { token, secret } = await driver.getRequestToken()
 
-  /**
-   * Make the redirect URL. We also send the state in the URL query string,
-   * along with a github specific "allow_signup" option.
-   */
-  const redirectUrl = driver.getRedirectUrl((request) => {
-    request.param('oauth_token', token)
-  })
+    /**
+     * Make the redirect URL. We also send the state in the URL query string,
+     * along with a github specific "allow_signup" option.
+     */
+    const redirectUrl = driver.getRedirectUrl((request) => {
+      request.param('oauth_token', token)
+    })
 
-  /**
-   * Store state inside cookie for later verification
-   */
-  res.cookie('twitter_oauth_token', token, { sameSite: false })
-  res.cookie('twitter_oauth_token_secret', secret, { sameSite: false })
-  res.type('html').send(`<a href="${redirectUrl}">Login with Twitter</a>`)
+    /**
+     * Store state inside cookie for later verification
+     */
+    res.cookie('twitter_oauth_token', token, { sameSite: false })
+    res.cookie('twitter_oauth_token_secret', secret, { sameSite: false })
+    res.type('html').send(`<a href="${redirectUrl}">Login with Twitter</a>`)
+  } catch (error) {
+    console.log(error)
+    res.send(error.response && error.response.body ? error.response.body : error.response || error)
+  }
 }
 
 export async function handleCallback(req: Request, res: Response) {
