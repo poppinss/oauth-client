@@ -8,8 +8,7 @@
  */
 
 import { parse } from 'node:querystring'
-import string from '@poppinss/utils/string'
-import { RuntimeException } from '@poppinss/utils'
+import { RuntimeException } from '@poppinss/exception'
 import type {
   Oauth1AccessToken,
   Oauth1ClientConfig,
@@ -19,6 +18,7 @@ import type {
 } from '../../types.js'
 
 import debug from '../../debug.js'
+import { random } from '../../helpers.js'
 import { Oauth1Signature } from './signature.js'
 import { HttpClient } from '../../http_client.js'
 import { UrlBuilder } from '../../url_builder.js'
@@ -60,7 +60,7 @@ export class Oauth1Client<Token extends Oauth1AccessToken> {
       params: params,
       consumerKey: this.options.clientId,
       consumerSecret: this.options.clientSecret,
-      nonce: string.random(32),
+      nonce: random(32),
       unixTimestamp: Math.floor(new Date().getTime() / 1000),
       oauthToken: requestToken && requestToken.token,
       oauthTokenSecret: requestToken && requestToken.secret,

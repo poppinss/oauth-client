@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { createError, Exception } from '@poppinss/utils'
+import { createError, Exception } from '@poppinss/exception'
 
 /**
  * Raised when unable to get access token for oauth2 or oauth token and secret

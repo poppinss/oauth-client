@@ -8,8 +8,7 @@
  */
 
 import { parse } from 'node:querystring'
-import string from '@poppinss/utils/string'
-import { RuntimeException } from '@poppinss/utils'
+import { RuntimeException } from '@poppinss/exception'
 
 import {
   Oauth2AccessToken,
@@ -19,6 +18,7 @@ import {
 } from '../../types.js'
 
 import debug from '../../debug.js'
+import { random } from '../../helpers.js'
 import { HttpClient } from '../../http_client.js'
 import { UrlBuilder } from '../../url_builder.js'
 import { E_OAUTH_MISSING_TOKEN, E_OAUTH_STATE_MISMATCH } from '../../errors.js'
@@ -129,7 +129,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
    * for later verification
    */
   getState() {
-    return string.random(32)
+    return random(32)
   }
 
   /**
