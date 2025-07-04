@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Request, Response } from 'express'
+import { type Request, type Response } from 'express'
 
 import { googleConfig } from './config.js'
 import { Oauth2Client } from '../src/clients/oauth2/main.js'

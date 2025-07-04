@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { Request, Response } from 'express'
+import { type Request, type Response } from 'express'
 
 import { twitterConfig } from './config.js'
 import { Oauth1Client } from '../src/clients/oauth1/main.js'

@@ -11,10 +11,10 @@ import { parse } from 'node:querystring'
 import { RuntimeException } from '@poppinss/exception'
 
 import {
-  Oauth2AccessToken,
-  Oauth2ClientConfig,
-  ApiRequestContract,
-  RedirectRequestContract,
+  type Oauth2AccessToken,
+  type Oauth2ClientConfig,
+  type ApiRequestContract,
+  type RedirectRequestContract,
 } from '../../types.js'
 
 import debug from '../../debug.js'
