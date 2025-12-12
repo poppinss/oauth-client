@@ -84,12 +84,30 @@
     "access": "public",
     "tag": "latest"
   },
-  "np": {
-    "message": "chore(release): %s",
-    "tag": "latest",
-    "branch": "main",
-    "anyBranch": false
-  },
+  "release-it": {
+		"git": {
+			"requireCleanWorkingDir": true,
+			"requireUpstream": true,
+			"commitMessage": "chore(release): ${version}",
+			"tagAnnotation": "v${version}",
+			"push": true,
+			"tagName": "v${version}"
+		},
+		"github": {
+			"release": true
+		},
+		"npm": {
+			"publish": true,
+			"skipChecks": true
+		},
+		"plugins": {
+			"@release-it/conventional-changelog": {
+				"preset": {
+					"name": "angular"
+				}
+			}
+		}
+	},
   "c8": {
     "reporter": [
       "text",
