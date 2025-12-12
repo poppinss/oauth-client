@@ -15,14 +15,14 @@ import type {
   ApiRequestContract,
   Oauth1RequestToken,
   RedirectRequestContract,
-} from '../../types.js'
+} from '../../types.ts'
 
-import debug from '../../debug.js'
-import { random } from '../../helpers.js'
-import { Oauth1Signature } from './signature.js'
-import { HttpClient } from '../../http_client.js'
-import { UrlBuilder } from '../../url_builder.js'
-import { E_OAUTH_MISSING_TOKEN, E_OAUTH_STATE_MISMATCH } from '../../errors.js'
+import debug from '../../debug.ts'
+import { random } from '../../helpers.ts'
+import { Oauth1Signature } from './signature.ts'
+import { HttpClient } from '../../http_client.ts'
+import { UrlBuilder } from '../../url_builder.ts'
+import { E_OAUTH_MISSING_TOKEN, E_OAUTH_STATE_MISMATCH } from '../../errors.ts'
 
 /**
  * Generic implementation of Oauth1 three leged authorization flow.

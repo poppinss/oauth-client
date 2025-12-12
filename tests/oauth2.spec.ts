@@ -10,7 +10,7 @@
 import nock from 'nock'
 import { test } from '@japa/runner'
 import { parse } from 'node:querystring'
-import { Oauth2Client } from '../src/clients/oauth2/main.js'
+import { Oauth2Client } from '../src/clients/oauth2/main.ts'
 
 test.group('Oauth2Client | state', () => {
   test('generate a random state string', async ({ assert }) => {

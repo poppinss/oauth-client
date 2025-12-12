@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { UrlBuilder } from '../src/url_builder.js'
+import { UrlBuilder } from '../src/url_builder.ts'
 
 test.group('URL Builder', () => {
   test('create a url', ({ assert }) => {

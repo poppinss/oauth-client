@@ -9,8 +9,8 @@
 
 import { type Request, type Response } from 'express'
 
-import { twitterConfig } from './config.js'
-import { Oauth1Client } from '../src/clients/oauth1/main.js'
+import { twitterConfig } from './config.ts'
+import { Oauth1Client } from '../src/clients/oauth1/main.ts'
 
 export async function renderRedirect(_: Request, res: Response) {
   try {

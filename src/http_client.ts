@@ -9,8 +9,8 @@
 
 import ky, { type ResponsePromise, type Options } from 'ky'
 
-import debug from './debug.js'
-import type { ApiRequestContract } from './types.js'
+import debug from './debug.ts'
+import type { ApiRequestContract } from './types.ts'
 
 /**
  * An HTTP client abstraction we need for making OAuth requests

@@ -9,7 +9,7 @@
 
 import nock from 'nock'
 import { test } from '@japa/runner'
-import { HttpClient } from '../src/http_client.js'
+import { HttpClient } from '../src/http_client.ts'
 
 test.group('HttpClient', () => {
   test('make post request', async ({ assert }) => {

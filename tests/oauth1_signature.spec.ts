@@ -8,7 +8,7 @@
  */
 
 import { test } from '@japa/runner'
-import { Oauth1Signature } from '../src/clients/oauth1/signature.js'
+import { Oauth1Signature } from '../src/clients/oauth1/signature.ts'
 
 test.group('Oauth1Signature', () => {
   test('create signature for the oauth1 request token', ({ assert }) => {

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import { type Oauth1ClientConfig, type Oauth2ClientConfig } from '../src/types.js'
+import { type Oauth1ClientConfig, type Oauth2ClientConfig } from '../src/types.ts'
 const BASE_URL = `http://localhost:${process.env.PORT}`
 
 export const githubConfig: Oauth2ClientConfig = {

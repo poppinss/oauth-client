@@ -9,8 +9,8 @@
 
 import { type Request, type Response } from 'express'
 
-import { googleConfig } from './config.js'
-import { Oauth2Client } from '../src/clients/oauth2/main.js'
+import { googleConfig } from './config.ts'
+import { Oauth2Client } from '../src/clients/oauth2/main.ts'
 
 export function renderRedirect(_: Request, res: Response) {
   /**

@@ -10,7 +10,7 @@
 import nock from 'nock'
 import { test } from '@japa/runner'
 import { escape } from 'node:querystring'
-import { Oauth1Client } from '../src/clients/oauth1/main.js'
+import { Oauth1Client } from '../src/clients/oauth1/main.ts'
 
 test.group('Oauth1Client | verify state', () => {
   test('throw when state and input values are not the same', ({ assert }) => {

@@ -10,7 +10,7 @@
 import { URL } from 'node:url'
 import { createHmac } from 'node:crypto'
 import { escape } from 'node:querystring'
-import type { Oauth1SignatureOptions } from '../../types.js'
+import type { Oauth1SignatureOptions } from '../../types.ts'
 
 /**
  * Creates the signature for the OAuth1 request by following the spec

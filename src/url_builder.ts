@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-import type { RedirectRequestContract } from './types.js'
+import type { RedirectRequestContract } from './types.ts'
 
 /**
  * Fluent API to constructor a URL with query string
