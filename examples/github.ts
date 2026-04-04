@@ -56,7 +56,7 @@ export async function handleCallback(req: Request, res: Response) {
       request.param('state', req.query.state)
     })
     res.type('json').send(accessToken)
-  } catch (error) {
+  } catch (error: any) {
     res.send(error.response && error.response.body ? error.response.body : error.response || error)
   }
 }

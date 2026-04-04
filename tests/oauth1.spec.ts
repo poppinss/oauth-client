@@ -222,7 +222,7 @@ test.group('Oauth1Client | request token', () => {
       await request.getRequestToken((req) => {
         req.oauth1Param('oauth_callback', 'http://localhost:3000')
       })
-    } catch (error) {
+    } catch (error: any) {
       assert.equal(
         error.message,
         'Invalid oauth1 response. Missing "oauth_token" and "oauth_token_secret"'
@@ -267,7 +267,7 @@ test.group('Oauth1Client | request token', () => {
       await request.getRequestToken((req) => {
         req.oauth1Param('oauth_callback', 'http://localhost:3000')
       })
-    } catch (error) {
+    } catch (error: any) {
       assert.equal(
         error.message,
         'Invalid oauth1 response. Missing "oauth_token" and "oauth_token_secret"'
@@ -312,7 +312,7 @@ test.group('Oauth1Client | request token', () => {
       await request.getRequestToken((req) => {
         req.oauth1Param('oauth_callback', 'http://localhost:3000')
       })
-    } catch (error) {
+    } catch (error: any) {
       assert.equal(
         error.message,
         'Invalid oauth1 response. Missing "oauth_token" and "oauth_token_secret"'
@@ -333,7 +333,7 @@ test.group('Oauth1Client | request token', () => {
       await request.getRequestToken((req) => {
         req.oauth1Param('oauth_callback', 'http://localhost:3000')
       })
-    } catch (error) {
+    } catch (error: any) {
       assert.equal(
         error.message,
         'Missing "config.requestTokenUrl". The property is required to get request token'
