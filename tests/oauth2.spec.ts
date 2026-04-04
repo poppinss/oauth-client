@@ -12,6 +12,28 @@ import { test } from '@japa/runner'
 import { parse } from 'node:querystring'
 import { Oauth2Client } from '../src/clients/oauth2/main.ts'
 
+class Oauth2PkceClient extends Oauth2Client<any> {
+  constructor(
+    options: ConstructorParameters<typeof Oauth2Client>[0],
+    private codeVerifier: string,
+    private codeChallengeMethod: 'S256' | 'plain' = 'S256'
+  ) {
+    super(options)
+  }
+
+  protected getPkceCodeVerifier() {
+    return this.codeVerifier
+  }
+
+  protected getPkceCodeChallengeMethod() {
+    return this.codeChallengeMethod
+  }
+
+  codeChallengeForTesting(codeVerifier: string) {
+    return this.makeCodeChallenge(codeVerifier, this.codeChallengeMethod)
+  }
+}
+
 test.group('Oauth2Client | state', () => {
   test('generate a random state string', async ({ assert }) => {
     const request = new Oauth2Client({
@@ -85,6 +107,47 @@ test.group('Oauth2Client | redirect url', () => {
       'https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=&client_id=a-dummy-consumer-key&grant_type=authorization_code'
     )
   })
+
+  test('add pkce params when child class provides code verifier', async ({ assert }) => {
+    const request = new Oauth2PkceClient(
+      {
+        authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+        callbackUrl: '',
+        accessTokenUrl: '',
+        clientId: 'a-dummy-consumer-key',
+        clientSecret: 'a-dummy-consumer-secret',
+      },
+      'verifier-123'
+    )
+
+    const url = request.getRedirectUrl()
+    assert.equal(
+      url,
+      `https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=&client_id=a-dummy-consumer-key&code_challenge=${request.codeChallengeForTesting(
+        'verifier-123'
+      )}&code_challenge_method=S256`
+    )
+  })
+
+  test('support plain pkce challenge method', async ({ assert }) => {
+    const request = new Oauth2PkceClient(
+      {
+        authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+        callbackUrl: '',
+        accessTokenUrl: '',
+        clientId: 'a-dummy-consumer-key',
+        clientSecret: 'a-dummy-consumer-secret',
+      },
+      'verifier-123',
+      'plain'
+    )
+
+    const url = request.getRedirectUrl()
+    assert.equal(
+      url,
+      'https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=&client_id=a-dummy-consumer-key&code_challenge=verifier-123&code_challenge_method=plain'
+    )
+  })
 })
 
 test.group('Oauth2Client | access token', () => {
@@ -112,6 +175,39 @@ test.group('Oauth2Client | access token', () => {
       clientId: 'a-dummy-consumer-key',
       clientSecret: 'a-dummy-consumer-secret',
     })
+
+    const response = await request.getAccessToken((req) => req.param('code', '1234'))
+    assert.containsSubset(response, { token: '1234', type: 'bearer' })
+  })
+
+  test('send pkce code verifier when child class provides it', async ({ assert }) => {
+    assert.plan(2)
+
+    nock('https://oauth2.googleapis.com')
+      .post('/token')
+      .query({ code: '1234' })
+      .reply(function (_, body) {
+        assert.deepEqual(parse(body as string), {
+          grant_type: 'authorization_code',
+          redirect_uri: '',
+          client_id: 'a-dummy-consumer-key',
+          client_secret: 'a-dummy-consumer-secret',
+          code_verifier: 'verifier-123',
+        })
+
+        return [200, { access_token: '1234', type: 'bearer' }]
+      })
+
+    const request = new Oauth2PkceClient(
+      {
+        authorizeUrl: '',
+        callbackUrl: '',
+        accessTokenUrl: 'https://oauth2.googleapis.com/token',
+        clientId: 'a-dummy-consumer-key',
+        clientSecret: 'a-dummy-consumer-secret',
+      },
+      'verifier-123'
+    )
 
     const response = await request.getAccessToken((req) => req.param('code', '1234'))
     assert.containsSubset(response, { token: '1234', type: 'bearer' })

@@ -7,12 +7,14 @@
  * file that was distributed with this source code.
  */
 
+import { createHash } from 'node:crypto'
 import { parse } from 'node:querystring'
 import { RuntimeException } from '@poppinss/exception'
 
 import {
   type Oauth2AccessToken,
   type Oauth2ClientConfig,
+  type Oauth2PkceMethod,
   type ApiRequestContract,
   type RedirectRequestContract,
 } from '../../types.ts'
@@ -38,6 +40,29 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
    * Define the access token url. Can be overridden by config
    */
   protected accessTokenUrl: string = ''
+
+  /**
+   * Returns the PKCE code verifier. Child classes can override this method
+   * to enable PKCE and return a persisted verifier.
+   */
+  protected getPkceCodeVerifier(): string | null {
+    return null
+  }
+
+  /**
+   * Returns the PKCE code challenge. Child classes can override this method
+   * to customize the challenge derivation or persistence strategy.
+   */
+  protected getPkceCodeChallenge(codeVerifier: string): string {
+    return this.makeCodeChallenge(codeVerifier, this.getPkceCodeChallengeMethod())
+  }
+
+  /**
+   * Returns the PKCE code challenge method.
+   */
+  protected getPkceCodeChallengeMethod(): Oauth2PkceMethod {
+    return 'S256'
+  }
 
   /**
    * Processing the API client response. The child class can overwrite it
@@ -86,6 +111,24 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
   }
 
   /**
+   * Generates a random PKCE code verifier.
+   */
+  protected makeCodeVerifier() {
+    return random(64)
+  }
+
+  /**
+   * Generates a PKCE code challenge from the given verifier.
+   */
+  protected makeCodeChallenge(codeVerifier: string, method: Oauth2PkceMethod = 'S256') {
+    if (method === 'plain') {
+      return codeVerifier
+    }
+
+    return createHash('sha256').update(codeVerifier).digest('base64url')
+  }
+
+  /**
    * Returns the redirect url for redirecting the user. Pre-defines
    * the following params
    *
@@ -107,6 +150,12 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
      */
     urlBuilder.param('redirect_uri', this.options.callbackUrl)
     urlBuilder.param('client_id', this.options.clientId)
+
+    const codeVerifier = this.getPkceCodeVerifier()
+    if (codeVerifier) {
+      urlBuilder.param('code_challenge', this.getPkceCodeChallenge(codeVerifier))
+      urlBuilder.param('code_challenge_method', this.getPkceCodeChallengeMethod())
+    }
 
     this.configureRedirectRequest(urlBuilder)
 
@@ -175,6 +224,11 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
     httpClient.field('redirect_uri', this.options.callbackUrl)
     httpClient.field('client_id', this.options.clientId)
     httpClient.field('client_secret', this.options.clientSecret)
+
+    const codeVerifier = this.getPkceCodeVerifier()
+    if (codeVerifier) {
+      httpClient.field('code_verifier', codeVerifier)
+    }
 
     /**
      * Expecting JSON response. One can call `parseAs('text')` for urlencoded

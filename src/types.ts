@@ -9,8 +9,24 @@
 
 export type KnownHeaders = 'Authorization'
 export type KnownOauth1Params = 'oauth_verifier'
-export type KnownParams = 'client_id' | 'redirect_uri' | 'oauth_token'
-export type KnownFields = 'grant_type' | 'redirect_uri' | 'client_id' | 'client_secret' | 'code'
+export type KnownParams =
+  | 'client_id'
+  | 'redirect_uri'
+  | 'oauth_token'
+  | 'code_challenge'
+  | 'code_challenge_method'
+export type KnownFields =
+  | 'grant_type'
+  | 'redirect_uri'
+  | 'client_id'
+  | 'client_secret'
+  | 'code'
+  | 'code_verifier'
+
+/**
+ * OAuth2 PKCE (RFC 7636) challenge methods.
+ */
+export type Oauth2PkceMethod = 'S256' | 'plain'
 
 /**
  * Base request for making the redirect URL
