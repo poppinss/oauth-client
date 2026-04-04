@@ -15,14 +15,19 @@ import { Oauth2Client } from '../src/clients/oauth2/main.ts'
 class Oauth2PkceClient extends Oauth2Client<any> {
   constructor(
     options: ConstructorParameters<typeof Oauth2Client>[0],
-    private codeVerifier: string,
+    private redirectCodeVerifier: string | null,
+    private accessTokenCodeVerifier: string | null = redirectCodeVerifier,
     private codeChallengeMethod: 'S256' | 'plain' = 'S256'
   ) {
     super(options)
   }
 
-  protected getPkceCodeVerifier() {
-    return this.codeVerifier
+  protected getPkceCodeVerifierForRedirect() {
+    return this.redirectCodeVerifier
+  }
+
+  protected getPkceCodeVerifierForAccessToken() {
+    return this.accessTokenCodeVerifier
   }
 
   protected getPkceCodeChallengeMethod() {
@@ -31,6 +36,21 @@ class Oauth2PkceClient extends Oauth2Client<any> {
 
   codeChallengeForTesting(codeVerifier: string) {
     return this.makeCodeChallenge(codeVerifier, this.codeChallengeMethod)
+  }
+
+  static forRedirect(
+    options: ConstructorParameters<typeof Oauth2Client>[0],
+    codeVerifier: string,
+    codeChallengeMethod: 'S256' | 'plain' = 'S256'
+  ) {
+    return new Oauth2PkceClient(options, codeVerifier, codeVerifier, codeChallengeMethod)
+  }
+
+  static forAccessToken(
+    options: ConstructorParameters<typeof Oauth2Client>[0],
+    codeVerifier: string
+  ) {
+    return new Oauth2PkceClient(options, null, codeVerifier)
   }
 }
 
@@ -109,7 +129,7 @@ test.group('Oauth2Client | redirect url', () => {
   })
 
   test('add pkce params when child class provides code verifier', async ({ assert }) => {
-    const request = new Oauth2PkceClient(
+    const request = Oauth2PkceClient.forRedirect(
       {
         authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
         callbackUrl: '',
@@ -130,7 +150,7 @@ test.group('Oauth2Client | redirect url', () => {
   })
 
   test('support plain pkce challenge method', async ({ assert }) => {
-    const request = new Oauth2PkceClient(
+    const request = Oauth2PkceClient.forRedirect(
       {
         authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
         callbackUrl: '',
@@ -198,7 +218,7 @@ test.group('Oauth2Client | access token', () => {
         return [200, { access_token: '1234', type: 'bearer' }]
       })
 
-    const request = new Oauth2PkceClient(
+    const request = Oauth2PkceClient.forAccessToken(
       {
         authorizeUrl: '',
         callbackUrl: '',

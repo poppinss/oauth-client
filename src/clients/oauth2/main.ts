@@ -42,10 +42,18 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
   protected accessTokenUrl: string = ''
 
   /**
-   * Returns the PKCE code verifier. Child classes can override this method
-   * to enable PKCE and return a persisted verifier.
+   * Returns the PKCE code verifier for building the authorization redirect.
+   * Child classes can override this method to generate and persist a verifier.
    */
-  protected getPkceCodeVerifier(): string | null {
+  protected getPkceCodeVerifierForRedirect(): string | null {
+    return null
+  }
+
+  /**
+   * Returns the PKCE code verifier for the access token exchange.
+   * Child classes can override this method to load a previously persisted verifier.
+   */
+  protected getPkceCodeVerifierForAccessToken(): string | null {
     return null
   }
 
@@ -151,7 +159,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
     urlBuilder.param('redirect_uri', this.options.callbackUrl)
     urlBuilder.param('client_id', this.options.clientId)
 
-    const codeVerifier = this.getPkceCodeVerifier()
+    const codeVerifier = this.getPkceCodeVerifierForRedirect()
     if (codeVerifier) {
       urlBuilder.param('code_challenge', this.getPkceCodeChallenge(codeVerifier))
       urlBuilder.param('code_challenge_method', this.getPkceCodeChallengeMethod())
@@ -225,7 +233,7 @@ export class Oauth2Client<Token extends Oauth2AccessToken> {
     httpClient.field('client_id', this.options.clientId)
     httpClient.field('client_secret', this.options.clientSecret)
 
-    const codeVerifier = this.getPkceCodeVerifier()
+    const codeVerifier = this.getPkceCodeVerifierForAccessToken()
     if (codeVerifier) {
       httpClient.field('code_verifier', codeVerifier)
     }

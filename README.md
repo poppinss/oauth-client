@@ -129,7 +129,7 @@ The `getAccessToken` method sets the following form fields for the access token 
 - redirect_uri: Referenced from config
 - client_id: Referenced from config
 - client_secret: Referenced from config
-- code_verifier: Added automatically when a child class overrides `getPkceCodeVerifier`
+- code_verifier: Added automatically when a child class overrides `getPkceCodeVerifierForAccessToken`
 
 You must set the authorization code and any other form fields manually by defining the optional callback.
 
@@ -139,7 +139,7 @@ const accessToken = await client.getAccessToken((request) => {
 })
 ```
 
-If a provider requires PKCE, then your framework specific child driver should persist the verifier and expose it by overriding `getPkceCodeVerifier`. The client will then automatically add `code_challenge` / `code_challenge_method` to the redirect URL and `code_verifier` to the token request.
+If a provider requires PKCE, then your framework specific child driver should persist the verifier and expose it by overriding `getPkceCodeVerifierForRedirect` and `getPkceCodeVerifierForAccessToken`. The client will then automatically add `code_challenge` / `code_challenge_method` to the redirect URL and `code_verifier` to the token request.
 
 The generated access token has the following parameters.
 
@@ -365,12 +365,14 @@ If you need PKCE support, then override the PKCE hooks in your child class and p
 
 ```ts
 export class GithubDriver extends Oauth2Client {
-  protected getPkceCodeVerifier() {
-    return myFramework.req.cookies.pkce_verifier || null
+  protected getPkceCodeVerifierForRedirect() {
+    const verifier = this.makeCodeVerifier()
+    myFramework.res.cookie('pkce_verifier', verifier)
+    return verifier
   }
 
-  protected getPkceCodeChallenge(codeVerifier: string) {
-    return this.makeCodeChallenge(codeVerifier)
+  protected getPkceCodeVerifierForAccessToken() {
+    return myFramework.req.cookies.pkce_verifier || null
   }
 }
 ```
@@ -532,8 +534,8 @@ The following query params are defined.
 
   - redirect_uri: Referenced from the config
   - client_id: Referenced from the config
-  - code_challenge: Added automatically when a child class overrides `getPkceCodeVerifier`
-  - code_challenge_method: Added automatically when a child class overrides `getPkceCodeVerifier`
+  - code_challenge: Added automatically when a child class overrides `getPkceCodeVerifierForRedirect`
+  - code_challenge_method: Added automatically when a child class overrides `getPkceCodeVerifierForRedirect`
 
   ```ts
   client.getRedirectUrl((request) => {
@@ -554,7 +556,7 @@ The following query params are defined.
   - redirect_uri: Referenced from config
   - client_id: Referenced from config
   - client_secret: Referenced from config
-  - code_verifier: Added automatically when a child class overrides `getPkceCodeVerifier`
+  - code_verifier: Added automatically when a child class overrides `getPkceCodeVerifierForAccessToken`
 
   ```ts
   client.getAccessToken((request) => {
