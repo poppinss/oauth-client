@@ -44,4 +44,12 @@ test.group('URL Builder', () => {
     builder.param('bar', 'baz')
     assert.deepEqual(builder.getParams(), { foo: 'bar', bar: 'baz' })
   })
+
+  test('replace the value of an existing param', ({ assert }) => {
+    const builder = new UrlBuilder('http://foo.com')
+    builder.param('foo', 'bar')
+    builder.param('foo', 'baz')
+    assert.equal(builder.makeUrl(), 'http://foo.com/?foo=baz')
+    assert.deepEqual(builder.getParams(), { foo: 'baz' })
+  })
 })

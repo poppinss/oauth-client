@@ -32,10 +32,11 @@ export class UrlBuilder implements RedirectRequestContract {
   }
 
   /**
-   * Define the request param
+   * Define the request param. Replaces the existing value
+   * when the param is already defined
    */
   param(key: string, value: any) {
-    this.#url.searchParams.append(key, value)
+    this.#url.searchParams.set(key, value)
     return this
   }
 

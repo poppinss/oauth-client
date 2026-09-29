@@ -128,6 +128,24 @@ test.group('Oauth2Client | redirect url', () => {
     )
   })
 
+  test('override default redirect url params', async ({ assert }) => {
+    const request = new Oauth2Client({
+      authorizeUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+      callbackUrl: 'http://localhost:3000/callback',
+      accessTokenUrl: '',
+      clientId: 'a-dummy-consumer-key',
+      clientSecret: 'a-dummy-consumer-secret',
+    })
+
+    const url = request.getRedirectUrl((req) =>
+      req.param('redirect_uri', 'http://localhost:3000/link/callback')
+    )
+    assert.equal(
+      url,
+      'https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Flink%2Fcallback&client_id=a-dummy-consumer-key'
+    )
+  })
+
   test('add pkce params when child class provides code verifier', async ({ assert }) => {
     const request = Oauth2PkceClient.forRedirect(
       {
